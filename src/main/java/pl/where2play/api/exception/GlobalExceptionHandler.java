@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,20 +32,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex, HttpServletRequest request) {
         logError(ex, request);
-        
+
+        String requestId = (String) request.getAttribute("requestId");
+
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getStatus().value(),
                 ex.getErrorCode(),
                 ex.getMessage(),
                 ex.getTimestamp(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                requestId
         );
-        
+
         // Add validation errors if present (for InvalidRequestException)
         if (ex instanceof InvalidRequestException) {
             errorResponse.setValidationErrors(((InvalidRequestException) ex).getErrors());
         }
-        
+
         return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
@@ -56,7 +60,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
         logError(ex, request);
-        
+
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -65,16 +69,19 @@ public class GlobalExceptionHandler {
                         fieldError -> fieldError.getDefaultMessage() != null ? fieldError.getDefaultMessage() : "Invalid value",
                         (error1, error2) -> error1 + ", " + error2
                 ));
-        
+
+        String requestId = (String) request.getAttribute("requestId");
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "VALIDATION_ERROR",
                 "Validation failed",
                 LocalDateTime.now(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                requestId
         );
         errorResponse.setValidationErrors(errors);
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -86,7 +93,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(
             ConstraintViolationException ex, HttpServletRequest request) {
         logError(ex, request);
-        
+
         Map<String, String> errors = ex.getConstraintViolations()
                 .stream()
                 .collect(Collectors.toMap(
@@ -94,16 +101,19 @@ public class GlobalExceptionHandler {
                         violation -> violation.getMessage(),
                         (error1, error2) -> error1 + ", " + error2
                 ));
-        
+
+        String requestId = (String) request.getAttribute("requestId");
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "VALIDATION_ERROR",
                 "Constraint violation",
                 LocalDateTime.now(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                requestId
         );
         errorResponse.setValidationErrors(errors);
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -115,19 +125,46 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         logError(ex, request);
-        
+
         String message = String.format("Parameter '%s' should be of type %s", 
                 ex.getName(), ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown");
-        
+
+        String requestId = (String) request.getAttribute("requestId");
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "TYPE_MISMATCH",
                 message,
                 LocalDateTime.now(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                requestId
         );
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleNoHandlerFound(NoHandlerFoundException ex, HttpServletRequest request) {
+        // Don't log as error for favicon.ico requests
+        if (request.getRequestURI().equals("/favicon.ico")) {
+            log.debug("Favicon request not handled: {}", request.getRequestURI());
+        } else {
+            logError(ex, request);
+        }
+
+        String requestId = (String) request.getAttribute("requestId");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "RESOURCE_NOT_FOUND",
+                "The requested resource was not found",
+                LocalDateTime.now(),
+                request.getRequestURI(),
+                requestId
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -137,15 +174,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
         logError(ex, request);
-        
+
+        String requestId = (String) request.getAttribute("requestId");
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
                 "An unexpected error occurred",
                 LocalDateTime.now(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                requestId
         );
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -153,11 +193,20 @@ public class GlobalExceptionHandler {
      * Logs error details including request information.
      */
     private void logError(Exception ex, HttpServletRequest request) {
-        log.error("Exception occurred while processing request: {} {}",
-                request.getMethod(), request.getRequestURI(), ex);
-        
+        // Get request ID if available
+        String requestId = (String) request.getAttribute("requestId");
+        String requestIdInfo = requestId != null ? "[ID: " + requestId + "] " : "";
+
+        // Get API info if available
+        String apiInfo = (String) request.getAttribute("apiInfo");
+        String apiInfoLog = apiInfo != null ? "[API: " + apiInfo + "] " : "";
+
+        log.error("{}{}Exception occurred while processing request: {} {}",
+                requestIdInfo, apiInfoLog, request.getMethod(), request.getRequestURI(), ex);
+
         // Log request details
-        log.error("Request details: Method={}, URI={}, Parameters={}, Headers={}",
+        log.error("{}{}Request details: Method={}, URI={}, Parameters={}, Headers={}",
+                requestIdInfo, apiInfoLog,
                 request.getMethod(),
                 request.getRequestURI(),
                 request.getParameterMap(),
@@ -183,6 +232,7 @@ public class GlobalExceptionHandler {
         private final String message;
         private final LocalDateTime timestamp;
         private final String path;
+        private final String requestId;
         private Map<String, String> validationErrors;
 
         public ErrorResponse(int status, String errorCode, String message, LocalDateTime timestamp, String path) {
@@ -191,6 +241,16 @@ public class GlobalExceptionHandler {
             this.message = message;
             this.timestamp = timestamp;
             this.path = path;
+            this.requestId = null; // Default constructor for backward compatibility
+        }
+
+        public ErrorResponse(int status, String errorCode, String message, LocalDateTime timestamp, String path, String requestId) {
+            this.status = status;
+            this.errorCode = errorCode;
+            this.message = message;
+            this.timestamp = timestamp;
+            this.path = path;
+            this.requestId = requestId;
         }
 
         public int getStatus() {
@@ -211,6 +271,10 @@ public class GlobalExceptionHandler {
 
         public String getPath() {
             return path;
+        }
+
+        public String getRequestId() {
+            return requestId;
         }
 
         public Map<String, String> getValidationErrors() {
