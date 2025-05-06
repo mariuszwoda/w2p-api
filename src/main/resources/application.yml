@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: w2p-api
+  jpa:
+#    show-sql: true
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+  # Set default profile to dev
+  profiles:
+    active: dev
+  # Liquibase configuration
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+# Swagger/OpenAPI configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+
+# Common Actuator configuration
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+
+logging:
+  level:
+    org:
+      springframework:
+#        web: INFO
+#        web: DEBUG
+#    root: debug
+    root: info
+#    web: debug
+    # Enable logging for pl.where2play.api.config package to see request/response logs
+    pl.where2play.api.config: info
+
+# Request/Response Logging Configuration
+request-response-logging:
+  # Global flag to enable/disable all logging (default: true)
+  # Can be overridden by Azure environment variable REQUEST_RESPONSE_LOGGING_GLOBAL_ENABLED
+  global-enabled: true
+#  global-enabled: false
+  # Default endpoint-specific settings
+  endpoints:
+    # Format: endpoint-pattern: enabled
+    # Examples:
+    # "/api/events": true
+    # "/api/events/*": false
+
+# Azure Web App Environment Variables
+# These environment variables can be configured in Azure Web App Configuration
+# to override the settings in this file
+azure:
+  env-vars:
+    # Controls whether request/response logging is globally enabled
+    # Format: REQUEST_RESPONSE_LOGGING_GLOBAL_ENABLED=true|false
+    - REQUEST_RESPONSE_LOGGING_GLOBAL_ENABLED

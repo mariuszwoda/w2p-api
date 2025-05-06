@@ -1,0 +1,34 @@
+# Production profile configuration
+spring:
+  # PostgreSQL Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/calendardb
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+# Actuator configuration for prod profile - expose only recommended endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+      show-components: when_authorized
+  info:
+    env:
+      enabled: true
+logging:
+  level:
+    org:
+      springframework:
+#        web: INFO
+        web: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+#    org.springframework.orm.jpa: DEBUG
+#    org.springframework.transaction: DEBUG

@@ -1,0 +1,25 @@
+# Development profile configuration
+spring:
+  # H2 Database Configuration
+  datasource:
+#    url: jdbc:h2:mem:calendardb
+    url: jdbc:h2:file:~/h2-db/calendardb;AUTO_SERVER=true
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Actuator configuration for dev profile - expose all endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

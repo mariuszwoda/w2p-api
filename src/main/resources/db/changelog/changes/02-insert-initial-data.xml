@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="02" author="liquibase">
+        <!-- Event 1: Team Meeting -->
+        <insert tableName="calendar_events">
+            <column name="title">Team Meeting</column>
+            <column name="description">Weekly team sync-up</column>
+            <column name="start_time">2024-01-01 10:00:00</column>
+            <column name="end_time">2024-01-01 11:00:00</column>
+            <column name="location">Conference Room A</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">admin</column>
+            <column name="created_at">2023-12-31 09:00:00</column>
+            <column name="updated_at">2023-12-31 09:00:00</column>
+        </insert>
+
+        <!-- Event 2: Project Kickoff -->
+        <insert tableName="calendar_events">
+            <column name="title">Project Kickoff</column>
+            <column name="description">New project kickoff meeting</column>
+            <column name="start_time">2024-01-02 14:00:00</column>
+            <column name="end_time">2024-01-02 16:00:00</column>
+            <column name="location">Main Hall</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">manager</column>
+            <column name="created_at">2023-12-31 09:05:00</column>
+            <column name="updated_at">2023-12-31 09:05:00</column>
+        </insert>
+
+        <!-- Event 3: Client Presentation -->
+        <insert tableName="calendar_events">
+            <column name="title">Client Presentation</column>
+            <column name="description">Presenting new features to the client</column>
+            <column name="start_time">2024-01-03 11:00:00</column>
+            <column name="end_time">2024-01-03 12:30:00</column>
+            <column name="location">Client Office</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">sales</column>
+            <column name="created_at">2023-12-31 09:10:00</column>
+            <column name="updated_at">2023-12-31 09:10:00</column>
+        </insert>
+
+        <!-- Event 4: Training Session -->
+        <insert tableName="calendar_events">
+            <column name="title">Training Session</column>
+            <column name="description">New employee training</column>
+            <column name="start_time">2024-01-05 09:00:00</column>
+            <column name="end_time">2024-01-05 17:00:00</column>
+            <column name="location">Training Room</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">hr</column>
+            <column name="created_at">2023-12-31 09:15:00</column>
+            <column name="updated_at">2023-12-31 09:15:00</column>
+        </insert>
+
+        <!-- Event 5: Code Review -->
+        <insert tableName="calendar_events">
+            <column name="title">Code Review</column>
+            <column name="description">Review pull requests</column>
+            <column name="start_time">2024-01-01 14:00:00</column>
+            <column name="end_time">2024-01-01 15:00:00</column>
+            <column name="location">Online</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">tech_lead</column>
+            <column name="created_at">2023-12-31 09:20:00</column>
+            <column name="updated_at">2023-12-31 09:20:00</column>
+        </insert>
+
+        <!-- Event 6: Product Demo -->
+        <insert tableName="calendar_events">
+            <column name="title">Product Demo</column>
+            <column name="description">Demo of new product features</column>
+            <column name="start_time">2024-01-07 13:00:00</column>
+            <column name="end_time">2024-01-07 14:00:00</column>
+            <column name="location">Demo Room</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">product_manager</column>
+            <column name="created_at">2023-12-31 09:25:00</column>
+            <column name="updated_at">2023-12-31 09:25:00</column>
+        </insert>
+
+        <!-- Event 7: Retrospective -->
+        <insert tableName="calendar_events">
+            <column name="title">Retrospective</column>
+            <column name="description">Sprint retrospective meeting</column>
+            <column name="start_time">2024-01-10 16:00:00</column>
+            <column name="end_time">2024-01-10 17:00:00</column>
+            <column name="location">Conference Room B</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">scrum_master</column>
+            <column name="created_at">2023-12-31 09:30:00</column>
+            <column name="updated_at">2023-12-31 09:30:00</column>
+        </insert>
+
+        <!-- Event 8: Lunch and Learn -->
+        <insert tableName="calendar_events">
+            <column name="title">Lunch and Learn</column>
+            <column name="description">Technical presentation during lunch</column>
+            <column name="start_time">2024-01-04 12:00:00</column>
+            <column name="end_time">2024-01-04 13:00:00</column>
+            <column name="location">Cafeteria</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">developer</column>
+            <column name="created_at">2023-12-31 09:35:00</column>
+            <column name="updated_at">2023-12-31 09:35:00</column>
+        </insert>
+
+        <!-- Event 9: Holiday Party -->
+        <insert tableName="calendar_events">
+            <column name="title">Holiday Party</column>
+            <column name="description">Annual company holiday celebration</column>
+            <column name="start_time">2024-02-01 18:00:00</column>
+            <column name="end_time">2024-02-01 22:00:00</column>
+            <column name="location">Grand Hall</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">hr</column>
+            <column name="created_at">2023-12-31 09:40:00</column>
+            <column name="updated_at">2023-12-31 09:40:00</column>
+        </insert>
+
+        <!-- Event 10: System Maintenance -->
+        <insert tableName="calendar_events">
+            <column name="title">System Maintenance</column>
+            <column name="description">Scheduled system downtime for maintenance</column>
+            <column name="start_time">2024-01-14 22:00:00</column>
+            <column name="end_time">2024-01-15 02:00:00</column>
+            <column name="location">Server Room</column>
+            <column name="status">SCHEDULED</column>
+            <column name="created_by">it_admin</column>
+            <column name="created_at">2023-12-31 09:45:00</column>
+            <column name="updated_at">2023-12-31 09:45:00</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
