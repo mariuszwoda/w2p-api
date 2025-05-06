@@ -168,6 +168,28 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handles ResourceNotFoundException specifically for 404 errors when a resource is not found.
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        logError(ex, request);
+
+        String requestId = (String) request.getAttribute("requestId");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getErrorCode(),
+                ex.getMessage(),
+                ex.getTimestamp(),
+                request.getRequestURI(),
+                requestId
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    /**
      * Fallback handler for all other exceptions.
      */
     @ExceptionHandler(Exception.class)

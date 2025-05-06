@@ -29,7 +29,7 @@ public class CalendarEventController {
     public ResponseEntity<CalendarEvent> getEventById(@PathVariable Long id) {
         return calendarEventService.getEventById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("CalendarEvent", id));
     }
 
     @PostMapping
@@ -40,22 +40,14 @@ public class CalendarEventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CalendarEvent> updateEvent(@PathVariable Long id, @Valid @RequestBody CalendarEvent event) {
-        try {
-            CalendarEvent updatedEvent = calendarEventService.updateEvent(id, event);
-            return ResponseEntity.ok(updatedEvent);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        CalendarEvent updatedEvent = calendarEventService.updateEvent(id, event);
+        return ResponseEntity.ok(updatedEvent);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        try {
-            calendarEventService.deleteEvent(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        calendarEventService.deleteEvent(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
