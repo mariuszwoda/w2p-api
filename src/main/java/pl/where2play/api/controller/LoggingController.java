@@ -51,6 +51,7 @@ public class LoggingController {
 
     /**
      * Enable or disable logging for a specific endpoint.
+     * Sample: PUT http://localhost:8080/api/logging/endpoint?endpoint=/api/example&enabled=true
      *
      * @param endpoint the endpoint pattern (e.g., "/api/events", "/api/events/*")
      * @param enabled whether logging should be enabled for this endpoint

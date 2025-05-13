@@ -54,8 +54,8 @@ request-response-logging:
   endpoints:
     # Format: endpoint-pattern: enabled
     # Examples:
-    # "/api/events": true
-    # "/api/events/*": false
+     "/api/events": false
+     "/api/events/*": false
 
 # Azure Web App Environment Variables
 # These environment variables can be configured in Azure Web App Configuration

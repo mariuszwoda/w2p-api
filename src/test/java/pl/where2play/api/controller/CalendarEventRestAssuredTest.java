@@ -3,6 +3,7 @@ package pl.where2play.api.controller;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +34,10 @@ class CalendarEventRestAssuredTest {
         RestAssured.basePath = "/api/events";
     }
 
+    @AfterAll
+    static void tearDown() {
+        RestAssured.reset();
+    }
     @Test
     void getAllEvents_ShouldReturnEvents() {
         given()

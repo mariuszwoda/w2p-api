@@ -1,0 +1,30 @@
+# Test Environments Configuration
+
+# Default environment settings
+default:
+  baseUrl: http://localhost:8080
+  timeout: 10 # Database connection timeout in seconds
+
+# Development environment
+dev:
+  baseUrl: http://localhost:8080
+  configFile: application-dev.yml
+  timeout: 10
+
+# Production environment
+prod:
+  baseUrl: http://azure.com
+  configFile: application-prod.yml
+  timeout: 10
+
+# Custom environment example
+staging:
+  baseUrl: http://staging.example.com
+  configFile: application-staging.yml
+  timeout: 30
+
+# QA environment example
+qa:
+  baseUrl: http://qa.example.com
+  configFile: application-qa.yml
+  timeout: 25

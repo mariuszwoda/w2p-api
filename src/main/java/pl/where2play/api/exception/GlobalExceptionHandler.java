@@ -146,9 +146,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleNoHandlerFound(NoHandlerFoundException ex, HttpServletRequest request) {
-        // Don't log as error for favicon.ico requests
-        if (request.getRequestURI().equals("/favicon.ico")) {
-            log.debug("Favicon request not handled: {}", request.getRequestURI());
+        // Don't log as error for Chrome DevTools requests or favicon.ico
+        if (request.getRequestURI().contains("/.well-known/appspecific/com.chrome.devtools.json") || 
+            request.getRequestURI().equals("/favicon.ico")) {
+            log.debug("Request not handled: {}", request.getRequestURI());
         } else {
             logError(ex, request);
         }

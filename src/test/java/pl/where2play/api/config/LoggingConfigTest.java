@@ -1,16 +1,31 @@
 package pl.where2play.api.config;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class LoggingConfigTest {
 
     @Autowired
     private LoggingConfig loggingConfig;
+
+//    @BeforeEach
+//    void setUp() {
+//        // Disable loading endpoint settings from application.yml for tests
+//        loggingConfig.disableLoadingEndpointSettingsFromConfig();
+//    }
+
+    @AfterEach
+    void cleanUpAfterTest() {
+        // Reset logging settings after each test
+        loggingConfig.resetLoggingSettings();
+    }
 
     @Test
     void testDefaultSettings() {
