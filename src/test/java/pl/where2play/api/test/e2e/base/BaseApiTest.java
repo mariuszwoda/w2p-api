@@ -12,11 +12,13 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,7 +44,7 @@ import static org.hamcrest.Matchers.*;
  * Base class for API tests.
  * Provides common functionality for testing REST endpoints.
  */
-@ActiveProfiles("e2e")
+//@ActiveProfiles("e2e")
 //@ActiveProfiles({"e2e", "dev"})
 //@ActiveProfiles({"e2e", "prod"})
 @Slf4j
@@ -50,7 +52,6 @@ import static org.hamcrest.Matchers.*;
 @ContextConfiguration(classes = {ApiTestConfig.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag("E2ETest")
-@Disabled
 public abstract class BaseApiTest {
     // Default values
     private static final int DEFAULT_PORT = 8080;
@@ -58,6 +59,9 @@ public abstract class BaseApiTest {
 
     @Autowired
     protected ApiTestConfig apiTestConfig;
+
+    @Autowired
+    private Environment environment;
 
     private RequestSpecification requestSpec;
 
@@ -67,6 +71,9 @@ public abstract class BaseApiTest {
      */
     @BeforeAll
     void setUp() {
+        // Check if e2e profile is active, abort if not
+        checkE2eProfileActive();
+
         // Enable logging for RestAssured
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
@@ -88,6 +95,29 @@ public abstract class BaseApiTest {
                 .setContentType(ContentType.JSON)
                 .setConfig(config)
                 .build();
+    }
+
+    /**
+     * Checks if the "e2e" profile is active and aborts the test if it's not.
+     * This ensures that E2E tests only run when the "e2e" profile is active.
+     */
+    private void checkE2eProfileActive() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        boolean isE2eActive = false;
+
+        for (String profile : activeProfiles) {
+            if ("e2e".equals(profile)) {
+                isE2eActive = true;
+                break;
+            }
+        }
+
+        // Abort the test if e2e profile is not active
+        Assumptions.assumeTrue(isE2eActive, 
+            "Test aborted because 'e2e' profile is not active. Active profiles: " + 
+            String.join(", ", activeProfiles));
+
+        log.info("E2E profile is active. Proceeding with test.");
     }
 
     /**

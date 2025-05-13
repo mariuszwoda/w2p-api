@@ -70,7 +70,6 @@ class CalendarEventControllerApiTest extends BaseApiTest {
         Response response = this.testEndpoint(
                 "POST",
                 "/api/events",
-//                "",
                 "{\"title\": \"test\", \"startTime\": \"" + LocalDateTime.now() + "\", \"endTime\": \"" + LocalDateTime.now() + "\"}",
                 null,  // no query params
                 null,
