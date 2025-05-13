@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -140,7 +139,7 @@ public class LoggingConfig {
      * Enables or disables logging for a specific endpoint.
      *
      * @param endpoint the endpoint pattern (e.g., "/api/events", "/api/events/*")
-     * @param enabled whether logging should be enabled for this endpoint
+     * @param enabled  whether logging should be enabled for this endpoint
      */
     public void setEndpointLoggingEnabled(String endpoint, boolean enabled) {
         endpointLoggingSettings.put(endpoint, enabled);

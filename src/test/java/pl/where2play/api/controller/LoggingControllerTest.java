@@ -1,5 +1,6 @@
 package pl.where2play.api.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,12 @@ class LoggingControllerTest {
 
     @Autowired
     private LoggingConfig loggingConfig;
+
+    @AfterEach
+    void cleanUpAfterTest() {
+        // Reset logging settings after each test
+        loggingConfig.resetLoggingSettings();
+    }
 
     @Test
     void testGetLoggingSettings() throws Exception {

@@ -48,14 +48,14 @@ logging:
 request-response-logging:
   # Global flag to enable/disable all logging (default: true)
   # Can be overridden by Azure environment variable REQUEST_RESPONSE_LOGGING_GLOBAL_ENABLED
-  global-enabled: true
+  global-enabled: false
 #  global-enabled: false
   # Default endpoint-specific settings
   endpoints:
     # Format: endpoint-pattern: enabled
     # Examples:
-     "/api/events": false
-     "/api/events/*": false
+#     "/api/events": false
+#     "/api/events/*": false
 
 # Azure Web App Environment Variables
 # These environment variables can be configured in Azure Web App Configuration

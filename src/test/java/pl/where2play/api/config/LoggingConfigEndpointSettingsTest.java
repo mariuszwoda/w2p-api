@@ -1,5 +1,7 @@
 package pl.where2play.api.config;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +20,12 @@ class LoggingConfigEndpointSettingsTest {
     @Autowired
     private LoggingConfig loggingConfig;
 
+    @BeforeEach
+    void setUp() {
+        // Reset logging settings after each test
+        loggingConfig.resetLoggingSettings();
+    }
+
     @Test
     void testEndpointSettingsLoadedFromApplicationYml() {
         // Get the endpoint settings
@@ -34,6 +42,7 @@ class LoggingConfigEndpointSettingsTest {
         
         // Verify that the isLoggingEnabledForUri method returns the correct values
         assertTrue(loggingConfig.isLoggingEnabledForUri("/api/events"),
+//        assertFalse(loggingConfig.isLoggingEnabledForUri("/api/events"),
                 "Logging for /api/events should be disabled as per application.yml");
         assertTrue(loggingConfig.isLoggingEnabledForUri("/api/events/1"),
                 "Logging for /api/events/1 should be disabled as per application.yml");

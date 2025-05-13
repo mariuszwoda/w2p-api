@@ -15,11 +15,12 @@ class LoggingConfigTest {
     @Autowired
     private LoggingConfig loggingConfig;
 
-//    @BeforeEach
-//    void setUp() {
+    @BeforeEach
+    void setUp() {
 //        // Disable loading endpoint settings from application.yml for tests
 //        loggingConfig.disableLoadingEndpointSettingsFromConfig();
-//    }
+        loggingConfig.resetLoggingSettings();
+    }
 
     @AfterEach
     void cleanUpAfterTest() {
@@ -42,17 +43,22 @@ class LoggingConfigTest {
     void testDisableGlobalLogging() {
         // Initially, global logging is enabled
         assertTrue(loggingConfig.isGlobalLoggingEnabled());
+//        assertFalse(loggingConfig.isGlobalLoggingEnabled());
 
         // Disable global logging
         loggingConfig.setGlobalLoggingEnabled(false);
+//        loggingConfig.setGlobalLoggingEnabled(true);
 
         // Now, logging should be disabled for all endpoints
         assertFalse(loggingConfig.isLoggingEnabledForUri("/api/events"));
         assertFalse(loggingConfig.isLoggingEnabledForUri("/api/events/1"));
         assertFalse(loggingConfig.isLoggingEnabledForUri("/api/logging"));
+//        assertTrue(loggingConfig.isLoggingEnabledForUri("/api/events"));
+//        assertTrue(loggingConfig.isLoggingEnabledForUri("/api/events/1"));
+//        assertTrue(loggingConfig.isLoggingEnabledForUri("/api/logging"));
 
         // Reset for other tests
-        loggingConfig.setGlobalLoggingEnabled(true);
+        loggingConfig.setGlobalLoggingEnabled(false);
     }
 
     @Test
