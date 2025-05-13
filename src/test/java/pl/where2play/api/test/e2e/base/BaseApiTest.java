@@ -14,7 +14,6 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ import static org.hamcrest.Matchers.*;
  * Provides common functionality for testing REST endpoints.
  */
 //@ActiveProfiles("e2e")
-//@ActiveProfiles({"e2e", "dev"})
+@ActiveProfiles({"e2e", "dev"})
 //@ActiveProfiles({"e2e", "prod"})
 @Slf4j
 @SpringJUnitConfig
@@ -113,15 +112,16 @@ public abstract class BaseApiTest {
         }
 
         // Abort the test if e2e profile is not active
-        Assumptions.assumeTrue(isE2eActive, 
-            "Test aborted because 'e2e' profile is not active. Active profiles: " + 
-            String.join(", ", activeProfiles));
+        Assumptions.assumeTrue(isE2eActive,
+                "Test aborted because 'e2e' profile is not active. Active profiles: " +
+                        String.join(", ", activeProfiles));
 
         log.info("E2E profile is active. Proceeding with test.");
     }
 
     /**
      * Parse a URL into its components (base URI and port).
+     *
      * @param url The URL to parse
      * @return A UrlComponents object containing the base URI and port
      */
@@ -157,6 +157,7 @@ public abstract class BaseApiTest {
 
     /**
      * Create a RestAssured configuration with the specified timeout.
+     *
      * @param timeoutMillis The timeout in milliseconds
      * @return The RestAssured configuration
      */
@@ -180,8 +181,8 @@ public abstract class BaseApiTest {
     /**
      * Delete records from a database table by their IDs and verify they were deleted.
      *
-     * @param tableName The name of the table to delete from
-     * @param ids List of IDs to delete
+     * @param tableName        The name of the table to delete from
+     * @param ids              List of IDs to delete
      * @param verificationPath The API path to verify deletion, with {id} placeholder
      */
     protected void deleteFromTable(String tableName, List<Long> ids, String verificationPath) {
@@ -209,10 +210,10 @@ public abstract class BaseApiTest {
      * Execute a SQL DELETE statement to remove records from a table.
      *
      * @param tableName The name of the table to delete from
-     * @param ids List of IDs to delete
+     * @param ids       List of IDs to delete
      * @return The number of rows affected
      * @throws ClassNotFoundException If the JDBC driver cannot be loaded
-     * @throws SQLException If there is an error executing the SQL
+     * @throws SQLException           If there is an error executing the SQL
      */
     private int executeDeleteSql(String tableName, List<Long> ids) throws ClassNotFoundException, SQLException {
         // Get database configuration from TestConfig
@@ -259,7 +260,7 @@ public abstract class BaseApiTest {
     /**
      * Verify that entities were deleted by trying to get them (should return 404).
      *
-     * @param ids List of IDs to verify
+     * @param ids              List of IDs to verify
      * @param verificationPath The API path to verify deletion, with {id} placeholder
      */
     private void verifyEntitiesDeleted(List<Long> ids, String verificationPath) {
@@ -288,14 +289,14 @@ public abstract class BaseApiTest {
     /**
      * Test an endpoint with the specified parameters.
      *
-     * @param method The HTTP method (GET, POST, PUT, DELETE, PATCH)
-     * @param path The path to the endpoint
-     * @param body The request body (can be null)
-     * @param queryParams Map of query parameters (can be null)
-     * @param headers Map of headers (can be null)
-     * @param pathParams Map of path parameters (can be null)
+     * @param method          The HTTP method (GET, POST, PUT, DELETE, PATCH)
+     * @param path            The path to the endpoint
+     * @param body            The request body (can be null)
+     * @param queryParams     Map of query parameters (can be null)
+     * @param headers         Map of headers (can be null)
+     * @param pathParams      Map of path parameters (can be null)
      * @param multipartParams Map of multipart parameters (can be null)
-     * @param expectedStatus The expected HTTP status code
+     * @param expectedStatus  The expected HTTP status code
      * @return The response from the endpoint
      */
     protected Response testEndpoint(
@@ -421,7 +422,7 @@ public abstract class BaseApiTest {
     /**
      * Validate that a response conforms to a JSON schema.
      *
-     * @param endpoint The endpoint to test
+     * @param endpoint   The endpoint to test
      * @param schemaPath The path to the JSON schema
      */
     protected void validateJsonSchema(String endpoint, String schemaPath) {
@@ -452,7 +453,7 @@ public abstract class BaseApiTest {
     /**
      * Apply custom validation logic to a response.
      *
-     * @param response The response to validate
+     * @param response        The response to validate
      * @param validationLogic A consumer that performs validation on the response
      */
     protected void validateCustomResponse(Response response,
@@ -501,7 +502,7 @@ public abstract class BaseApiTest {
         /**
          * Validate a field in the response body.
          *
-         * @param jsonPath The JSON path to the field
+         * @param jsonPath      The JSON path to the field
          * @param expectedValue The expected value
          * @return This ResponseValidator instance for method chaining
          */
@@ -527,7 +528,7 @@ public abstract class BaseApiTest {
          * Validate that a field matches a pattern.
          *
          * @param jsonPath The JSON path to the field
-         * @param pattern The pattern to match
+         * @param pattern  The pattern to match
          * @return This ResponseValidator instance for method chaining
          */
         public ResponseValidator validateFieldPattern(String jsonPath, String pattern) {
@@ -539,7 +540,7 @@ public abstract class BaseApiTest {
         /**
          * Validate the size of an array in the response body.
          *
-         * @param jsonPath The JSON path to the array
+         * @param jsonPath     The JSON path to the array
          * @param expectedSize The expected size of the array
          * @return This ResponseValidator instance for method chaining
          */
@@ -553,7 +554,7 @@ public abstract class BaseApiTest {
          * Validate that an array has at least a minimum size.
          *
          * @param jsonPath The JSON path to the array
-         * @param minSize The minimum size of the array
+         * @param minSize  The minimum size of the array
          * @return This ResponseValidator instance for method chaining
          */
         public ResponseValidator validateArrayMinSize(String jsonPath, int minSize) {
@@ -577,7 +578,7 @@ public abstract class BaseApiTest {
         /**
          * Validate that an array contains all expected items.
          *
-         * @param jsonPath The JSON path to the array
+         * @param jsonPath     The JSON path to the array
          * @param expectedList The list of expected items
          * @return This ResponseValidator instance for method chaining
          */
@@ -603,7 +604,7 @@ public abstract class BaseApiTest {
          * Extract a field from the response body.
          *
          * @param jsonPath The JSON path to the field
-         * @param type The class of the field to extract
+         * @param type     The class of the field to extract
          * @return The extracted field
          */
         public <T> T extractField(String jsonPath, Class<T> type) {
