@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.*;
  * Provides common functionality for testing REST endpoints.
  */
 //@ActiveProfiles("e2e")
-@ActiveProfiles({"e2e", "dev"})
+//@ActiveProfiles({"e2e", "dev"})
 //@ActiveProfiles({"e2e", "prod"})
 @Slf4j
 @SpringJUnitConfig
