@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Configuration
-public class TestConfig {
+public class ApiTestConfig {
     // Default values
     private static final String DEFAULT_BASE_URL = "http://localhost:8080";
     private static final String DEFAULT_CONFIG_FILE = "application-dev.yml";

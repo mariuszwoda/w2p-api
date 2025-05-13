@@ -22,14 +22,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import pl.where2play.api.test.e2e.config.TestConfig;
+import pl.where2play.api.test.e2e.config.ApiTestConfig;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ import static org.hamcrest.Matchers.*;
 //@ActiveProfiles({"e2e", "prod"})
 @Slf4j
 @SpringJUnitConfig
-@ContextConfiguration(classes = {TestConfig.class})
+@ContextConfiguration(classes = {ApiTestConfig.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag("E2ETest")
 @Disabled
@@ -58,7 +57,7 @@ public abstract class BaseApiTest {
     private static final int DEFAULT_TIMEOUT_MILLIS = 1000;
 
     @Autowired
-    protected TestConfig testConfig;
+    protected ApiTestConfig apiTestConfig;
 
     private RequestSpecification requestSpec;
 
@@ -73,7 +72,7 @@ public abstract class BaseApiTest {
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
 
         // Get base URL from configuration
-        String baseUrl = testConfig.getBaseUrl();
+        String baseUrl = apiTestConfig.getBaseUrl();
         log.info("Using base URL: {}", baseUrl);
 
         // Parse the URL to extract host and port
@@ -187,10 +186,10 @@ public abstract class BaseApiTest {
      */
     private int executeDeleteSql(String tableName, List<Long> ids) throws ClassNotFoundException, SQLException {
         // Get database configuration from TestConfig
-        Map<String, String> dbConfig = testConfig.getDatabaseConfig();
+        Map<String, String> dbConfig = apiTestConfig.getDatabaseConfig();
 
         // Log the environment and database configuration being used
-        log.info("Using environment: {}", testConfig.getEnvironment());
+        log.info("Using environment: {}", apiTestConfig.getEnvironment());
         log.info("Database URL: {}", dbConfig.get("url"));
 
         // Get database configuration
@@ -201,7 +200,7 @@ public abstract class BaseApiTest {
         Class.forName(driverClassName);
 
         // Get connection properties from TestConfig
-        Properties connectionProps = testConfig.getConnectionProperties();
+        Properties connectionProps = apiTestConfig.getConnectionProperties();
 
         // Establish a connection and execute the delete
         try (Connection connection = DriverManager.getConnection(url, connectionProps)) {

@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import pl.where2play.api.test.e2e.base.BaseApiTest;
-import pl.where2play.api.test.e2e.config.TestConfig;
+import pl.where2play.api.test.e2e.config.ApiTestConfig;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 class CalendarEventControllerApiTest extends BaseApiTest {
 
     @Autowired
-    private TestConfig testConfig;
+    private ApiTestConfig apiTestConfig;
 
     @AfterAll
     void tearDown() {
