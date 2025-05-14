@@ -6,6 +6,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.where2play.api.config.E2ETestOnly;
+import pl.where2play.api.config.E2ETestSupport;
 import pl.where2play.api.exception.ResourceNotFoundException;
 import pl.where2play.api.model.CalendarEvent;
 import pl.where2play.api.service.CalendarEventService;
@@ -44,9 +46,10 @@ public class CalendarEventController {
         return ResponseEntity.ok(updatedEvent);
     }
 
+    @E2ETestSupport
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        calendarEventService.deleteEvent(id);
+    public ResponseEntity<Void> deleteEventForTesting(@PathVariable Long id) {
+        calendarEventService.deleteEventForTesting(id);
         return ResponseEntity.noContent().build();
     }
 

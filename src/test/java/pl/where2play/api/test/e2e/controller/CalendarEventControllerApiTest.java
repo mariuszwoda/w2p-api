@@ -6,29 +6,41 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
+import pl.where2play.api.repository.CalendarEventRepository;
 import pl.where2play.api.test.e2e.base.BaseApiTest;
-import pl.where2play.api.test.e2e.config.ApiTestConfig;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+//@ActiveProfiles({"e2e", "dev"}) // Use dev profile by default, can be overridden with -Dspring.profiles.active=e2e,prod
 class CalendarEventControllerApiTest extends BaseApiTest {
 
-    @Autowired
-    private ApiTestConfig apiTestConfig;
+//    @Autowired
+//    private ApiTestConfig apiTestConfig;
 
-    @AfterAll
-    void tearDown() {
-        if (idCreated != null) {
-            deleteFromTable("calendar_events", List.of(idCreated), "/api/events/{id}");
+    @Autowired
+    private CalendarEventRepository calendarEventRepository;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T, ID> JpaRepository<T, ID> getRepositoryForClass(Class<?> repositoryClass) {
+        if (repositoryClass.equals(CalendarEventRepository.class)) {
+            return (JpaRepository<T, ID>) calendarEventRepository;
         }
+        return null;
     }
+
+//    @AfterAll
+//    void tearDown() {
+//        if (idCreated != null) {
+//            deleteFromTable("calendar_events", List.of(idCreated), "/api/events/{id}");
+//        }
+//    }
 
     static Long idCreated;
 
@@ -78,6 +90,9 @@ class CalendarEventControllerApiTest extends BaseApiTest {
                 HttpStatus.CREATED.value()
         );
         idCreated = Long.valueOf(response.body().jsonPath().getString("id"));
+
+        // Track the product ID for automatic cleanup after the test
+        trackEntityForCleanup(CalendarEventRepository.class, idCreated);
     }
 
     @ParameterizedTest
@@ -96,15 +111,15 @@ class CalendarEventControllerApiTest extends BaseApiTest {
         this.testEndpoint(method, path, body, queryParams, headers, pathParams, multipartParams, expectedStatus);
     }
 
-    @Disabled
-    @Test
-    @Order(3)
-    void testDelete() {
-        // If idCreated is null (when running this test directly), create an event first
-        if (idCreated == null) {
-            testCreate();
-        }
-        // Use the generic deleteFromTable method from BaseApiTest
-        deleteFromTable("calendar_events", Arrays.asList(idCreated), "/api/events/{id}");
-    }
+//    @Disabled
+//    @Test
+//    @Order(3)
+//    void testDelete() {
+//        // If idCreated is null (when running this test directly), create an event first
+//        if (idCreated == null) {
+//            testCreate();
+//        }
+//        // Use the generic deleteFromTable method from BaseApiTest
+//        deleteFromTable("calendar_events", Arrays.asList(idCreated), "/api/events/{id}");
+//    }
 }

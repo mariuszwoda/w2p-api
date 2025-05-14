@@ -2,6 +2,7 @@ package pl.where2play.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.where2play.api.config.E2ETestOnly;
 import pl.where2play.api.exception.ResourceNotFoundException;
 import pl.where2play.api.model.CalendarEvent;
 import pl.where2play.api.repository.CalendarEventRepository;
@@ -47,7 +48,8 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     }
 
     @Override
-    public void deleteEvent(Long id) {
+    @E2ETestOnly
+    public void deleteEventForTesting(Long id) {
         if (!calendarEventRepository.existsById(id)) {
             throw new ResourceNotFoundException("Event", id);
         }
