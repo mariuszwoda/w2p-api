@@ -35,4 +35,4 @@ build/
 ### AI Assistant: Junie ###
 .junie/
 
-/src/main/resources/rest-api/http-client.env.json
+/src/main/resources/rest-api/http-client.env*
