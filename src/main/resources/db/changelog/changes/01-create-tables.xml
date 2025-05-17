@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="01" author="w2p" runAlways="false">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="picture_url" type="varchar(255)"/>
+            <column name="auth_provider" type="varchar(50)"/>
+            <column name="provider_id" type="varchar(255)"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="calendar_events">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(1000)"/>
+            <column name="start_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="varchar(255)"/>
+            <column name="owner_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_event_owner" references="users(id)"/>
+            </column>
+            <column name="external_id" type="varchar(255)"/>
+            <column name="calendar_provider" type="varchar(50)"/>
+            <column name="is_all_day" type="boolean" defaultValueBoolean="false"/>
+            <column name="recurrence_rule" type="varchar(255)"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createTable tableName="event_attendees">
+            <column name="event_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_attendee_event" references="calendar_events(id)"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_attendee_user" references="users(id)"/>
+            </column>
+        </createTable>
+        
+        <addPrimaryKey tableName="event_attendees" columnNames="event_id, user_id"/>
+    </changeSet>
+
+</databaseChangeLog>

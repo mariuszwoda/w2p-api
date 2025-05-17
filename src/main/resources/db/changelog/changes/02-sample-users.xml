@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="02" author="w2p" runAlways="false">
+        <!-- Admin user -->
+        <insert tableName="users">
+            <column name="email">admin@example.com</column>
+            <column name="name">Admin User</column>
+            <column name="picture_url">https://example.com/admin.jpg</column>
+            <column name="auth_provider">LOCAL</column>
+            <column name="provider_id">admin123</column>
+        </insert>
+
+        <!-- Regular user -->
+        <insert tableName="users">
+            <column name="email">user@example.com</column>
+            <column name="name">Regular User</column>
+            <column name="picture_url">https://example.com/user.jpg</column>
+            <column name="auth_provider">LOCAL</column>
+            <column name="provider_id">user123</column>
+        </insert>
+
+        <!-- Google user -->
+        <insert tableName="users">
+            <column name="email">google@example.com</column>
+            <column name="name">Google User</column>
+            <column name="picture_url">https://example.com/google.jpg</column>
+            <column name="auth_provider">GOOGLE</column>
+            <column name="provider_id">google123</column>
+        </insert>
+
+        <!-- Facebook user -->
+        <insert tableName="users">
+            <column name="email">facebook@example.com</column>
+            <column name="name">Facebook User</column>
+            <column name="picture_url">https://example.com/facebook.jpg</column>
+            <column name="auth_provider">FACEBOOK</column>
+            <column name="provider_id">facebook123</column>
+        </insert>
+
+        <!-- E2E test user -->
+        <insert tableName="users">
+            <column name="email">e2e-test@example.com</column>
+            <column name="name">E2E Test User</column>
+            <column name="picture_url">https://example.com/e2e.jpg</column>
+            <column name="auth_provider">GOOGLE</column>
+            <column name="provider_id">e2e123</column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,8 @@
+{
+  "title": "JSON Test Event",
+  "description": "This event was created from a JSON file",
+  "startTime": "2025-12-01T10:00:00",
+  "endTime": "2025-12-01T11:00:00",
+  "location": "JSON Test Location",
+  "allDay": false
+}
