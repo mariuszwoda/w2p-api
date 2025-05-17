@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 import pl.where2play.w2papi.dto.request.AuthRequest;
 import pl.where2play.w2papi.dto.response.AuthResponse;
 import pl.where2play.w2papi.service.UserService;
@@ -18,7 +19,7 @@ import pl.where2play.w2papi.service.UserService;
  * Controller for authentication endpoints.
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(ApiEndpoint.Auth.BASE)
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Authentication", description = "Authentication API")
@@ -32,7 +33,7 @@ public class AuthController {
      * @param authRequest the authentication request
      * @return the authentication response with JWT token
      */
-    @PostMapping("/login")
+    @PostMapping(ApiEndpoint.Auth.LOGIN)
     @Operation(summary = "Authenticate user", description = "Authenticate a user with an OAuth2 token from Google or Facebook")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
         log.info("Authentication request received for provider: {}", authRequest.getProvider());

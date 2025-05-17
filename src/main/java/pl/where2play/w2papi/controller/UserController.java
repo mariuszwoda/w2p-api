@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 import pl.where2play.w2papi.dto.UserDTO;
 import pl.where2play.w2papi.model.User;
 import pl.where2play.w2papi.service.UserService;
@@ -19,7 +20,7 @@ import java.util.List;
  * Controller for user-related endpoints.
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(ApiEndpoint.User.BASE)
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Users", description = "User management API")
@@ -34,7 +35,7 @@ public class UserController {
      * @param userDetails the authenticated user details
      * @return the user DTO
      */
-    @GetMapping("/me")
+    @GetMapping(ApiEndpoint.User.CURRENT_USER)
     @Operation(summary = "Get current user", description = "Get the profile of the currently authenticated user")
     public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
         log.info("Getting profile for user: {}", userDetails.getUsername());
@@ -50,7 +51,7 @@ public class UserController {
      * @param pictureUrl the new picture URL
      * @return the updated user DTO
      */
-    @PutMapping("/me")
+    @PutMapping(ApiEndpoint.User.UPDATE_PROFILE)
     @Operation(summary = "Update profile", description = "Update the profile of the currently authenticated user")
     public ResponseEntity<UserDTO> updateProfile(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -68,7 +69,7 @@ public class UserController {
      * @param userDetails the authenticated user details
      * @return a success response
      */
-    @DeleteMapping("/me")
+    @DeleteMapping(ApiEndpoint.User.DELETE_ACCOUNT)
     @Operation(summary = "Delete account", description = "Delete the account of the currently authenticated user")
     public ResponseEntity<Void> deleteAccount(@AuthenticationPrincipal UserDetails userDetails) {
         log.info("Deleting account for user: {}", userDetails.getUsername());

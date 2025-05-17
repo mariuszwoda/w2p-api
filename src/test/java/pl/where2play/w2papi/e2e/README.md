@@ -15,7 +15,7 @@ src/test/java/pl/where2play/w2papi/e2e/
 │   ├── BaseApiTest.java         # Base class for all E2E tests
 │   ├── RequestConfig.java       # Configuration for API requests
 │   ├── constants/               # Constants used across tests
-│   │   └── ApiEndpoints.java    # API endpoint constants
+│   │   └── ApiEndpoint.java    # API endpoint constants
 │   ├── data/                    # Test data generation
 │   │   └── TestDataService.java # Service for generating test data
 │   └── util/                    # Utility classes
@@ -57,9 +57,9 @@ The `JsonUtils` class provides utilities for working with JSON files, including:
 - Loading test data from JSON files
 - Converting between objects and JSON
 
-### ApiEndpoints
+### ApiEndpoint
 
-The `ApiEndpoints` class externalizes API endpoint constants to be used across tests.
+The `ApiEndpoint` class externalizes API endpoint constants to be used across tests.
 
 ## Writing Tests
 
@@ -73,7 +73,7 @@ void testExample() {
     
     // 2. Make API request
     Response response = post(
-            ApiEndpoints.SomeEndpoint.SOME_PATH,
+            ApiEndpoint.SomeEndpoint.SOME_PATH,
             RequestConfig.withBody(request)
     );
     
@@ -97,7 +97,7 @@ void testWithJsonData() {
     
     // 2. Make API request
     Response response = post(
-            ApiEndpoints.SomeEndpoint.SOME_PATH,
+            ApiEndpoint.SomeEndpoint.SOME_PATH,
             RequestConfig.withBody(request)
     );
     
@@ -157,4 +157,4 @@ To run tests against a remote environment:
 
 ### Adding New Endpoints
 
-1. Add new endpoint constants to `ApiEndpoints`
+1. Add new endpoint constants to `ApiEndpoint`

@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import pl.where2play.w2papi.e2e.framework.BaseApiTest;
 import pl.where2play.w2papi.e2e.framework.RequestConfig;
-import pl.where2play.w2papi.e2e.framework.constants.ApiEndpoints;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
+import static pl.where2play.w2papi.constants.ApiEndpoint.GoogleCalendar.BASE;
 
 /**
  * E2E tests for the Google Calendar Controller.
@@ -22,7 +23,7 @@ public class GoogleCalendarControllerE2ETest extends BaseApiTest {
     void testGetAuthorizationUrl() {
         // Test getting authorization URL
         Response response = get(
-                ApiEndpoints.GoogleCalendar.AUTH_URL,
+                BASE+ ApiEndpoint.GoogleCalendar.AUTH_URL,
                 RequestConfig.empty()
         );
         
@@ -40,7 +41,7 @@ public class GoogleCalendarControllerE2ETest extends BaseApiTest {
         String testCode = "test-code-" + System.currentTimeMillis();
         
         Response response = post(
-                ApiEndpoints.GoogleCalendar.EXCHANGE_CODE,
+                BASE+ ApiEndpoint.GoogleCalendar.EXCHANGE_CODE,
                 RequestConfig.withQueryParams(Map.of("code", testCode))
         );
         
@@ -57,7 +58,7 @@ public class GoogleCalendarControllerE2ETest extends BaseApiTest {
     void testCheckAuthorizationStatus() {
         // Test checking authorization status
         Response response = get(
-                ApiEndpoints.GoogleCalendar.AUTH_STATUS,
+                BASE+ ApiEndpoint.GoogleCalendar.AUTH_STATUS,
                 RequestConfig.empty()
         );
         
@@ -72,7 +73,7 @@ public class GoogleCalendarControllerE2ETest extends BaseApiTest {
     void testUnauthorizedAccess() {
         // Try to access protected endpoint without authentication
         Response response = requestWithoutAuth(
-                ApiEndpoints.GoogleCalendar.AUTH_STATUS,
+                BASE+ ApiEndpoint.GoogleCalendar.AUTH_STATUS,
                 "GET",
                 RequestConfig.empty()
         );
@@ -87,7 +88,7 @@ public class GoogleCalendarControllerE2ETest extends BaseApiTest {
     void testExchangeCodeWithInvalidCode() {
         // Test exchanging code with invalid code
         Response response = post(
-                ApiEndpoints.GoogleCalendar.EXCHANGE_CODE,
+                BASE+ ApiEndpoint.GoogleCalendar.EXCHANGE_CODE,
                 RequestConfig.withQueryParams(Map.of("code", "invalid-code"))
         );
         

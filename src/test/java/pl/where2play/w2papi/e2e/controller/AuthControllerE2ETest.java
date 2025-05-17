@@ -9,14 +9,14 @@ import org.springframework.http.HttpStatus;
 import pl.where2play.w2papi.dto.request.AuthRequest;
 import pl.where2play.w2papi.e2e.framework.BaseApiTest;
 import pl.where2play.w2papi.e2e.framework.RequestConfig;
-import pl.where2play.w2papi.e2e.framework.constants.ApiEndpoints;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 
 import static org.hamcrest.Matchers.*;
 
 /**
  * E2E tests for the Auth Controller.
  */
-public class AuthControllerE2ETest extends BaseApiTest {
+class AuthControllerE2ETest extends BaseApiTest {
 
     @Test
     @DisplayName("Test successful authentication")
@@ -26,7 +26,7 @@ public class AuthControllerE2ETest extends BaseApiTest {
 
         // Test authentication endpoint
         Response response = post(
-                ApiEndpoints.Auth.LOGIN,
+                ApiEndpoint.Auth.BASE + ApiEndpoint.Auth.LOGIN,
                 RequestConfig.withBody(authRequest)
         );
 
@@ -51,7 +51,7 @@ public class AuthControllerE2ETest extends BaseApiTest {
 
         // Test authentication endpoint
         Response response = post(
-                ApiEndpoints.Auth.LOGIN,
+                ApiEndpoint.Auth.BASE + ApiEndpoint.Auth.LOGIN,
                 RequestConfig.withBody(authRequest)
         );
 
@@ -70,7 +70,7 @@ public class AuthControllerE2ETest extends BaseApiTest {
 
         // Test authentication endpoint
         Response response = post(
-                ApiEndpoints.Auth.LOGIN,
+                ApiEndpoint.Auth.BASE + ApiEndpoint.Auth.LOGIN,
                 RequestConfig.withBody(invalidRequest)
         );
 
@@ -90,7 +90,7 @@ public class AuthControllerE2ETest extends BaseApiTest {
 
         // Test authentication endpoint
         Response response = post(
-                ApiEndpoints.Auth.LOGIN,
+                ApiEndpoint.Auth.BASE + ApiEndpoint.Auth.LOGIN,
                 RequestConfig.withBody(authRequest)
         );
 

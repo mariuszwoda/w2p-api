@@ -6,13 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import pl.where2play.w2papi.e2e.framework.BaseApiTest;
 import pl.where2play.w2papi.e2e.framework.RequestConfig;
-import pl.where2play.w2papi.e2e.framework.constants.ApiEndpoints;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 import pl.where2play.w2papi.model.User;
 
 import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
+import static pl.where2play.w2papi.constants.ApiEndpoint.User.BASE;
 
 /**
  * E2E tests for the User Controller.
@@ -24,7 +25,7 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testGetCurrentUserProfile() {
         // Test getting current user profile
         Response response = get(
-                ApiEndpoints.User.CURRENT_USER,
+                BASE+ApiEndpoint.User.CURRENT_USER,
                 RequestConfig.empty()
         );
         
@@ -44,7 +45,7 @@ public class UserControllerE2ETest extends BaseApiTest {
         String newPictureUrl = "https://example.com/updated-picture.jpg";
         
         Response response = put(
-                ApiEndpoints.User.UPDATE_PROFILE,
+                BASE+ApiEndpoint.User.UPDATE_PROFILE,
                 RequestConfig.withQueryParams(Map.of(
                         "name", newName,
                         "pictureUrl", newPictureUrl
@@ -61,7 +62,7 @@ public class UserControllerE2ETest extends BaseApiTest {
         
         // Verify the update by getting the user profile again
         Response verifyResponse = get(
-                ApiEndpoints.User.CURRENT_USER,
+                BASE+ApiEndpoint.User.CURRENT_USER,
                 RequestConfig.empty()
         );
         
@@ -86,7 +87,7 @@ public class UserControllerE2ETest extends BaseApiTest {
         
         // Test searching for users
         Response response = get(
-                ApiEndpoints.User.SEARCH_USERS,
+                BASE+ApiEndpoint.User.SEARCH_USERS,
                 RequestConfig.withQueryParams(Map.of("query", uniqueName))
         );
         
@@ -102,7 +103,7 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testGetUserById() {
         // Test getting user by ID
         Response response = get(
-                ApiEndpoints.User.GET_USER,
+                BASE+ApiEndpoint.User.GET_USER,
                 RequestConfig.withPathParams(Map.of("id", testUser.getId()))
         );
         
@@ -119,7 +120,7 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testGetNonExistentUser() {
         // Test getting non-existent user
         Response response = get(
-                ApiEndpoints.User.GET_USER,
+                BASE+ApiEndpoint.User.GET_USER,
                 RequestConfig.withPathParams(Map.of("id", 999999L))
         );
         
@@ -133,7 +134,7 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testUnauthorizedAccess() {
         // Try to access protected endpoint without authentication
         Response response = requestWithoutAuth(
-                ApiEndpoints.User.CURRENT_USER,
+                BASE+ApiEndpoint.User.CURRENT_USER,
                 "GET",
                 RequestConfig.empty()
         );

@@ -29,7 +29,7 @@ public abstract class BaseApiTest {
     @LocalServerPort
     protected int port;
 
-    @Value("${api.base-path:/api}")
+    @Value("${api.base-path:}")
     protected String basePath;
 
     @Value("${api.remote-url:}")

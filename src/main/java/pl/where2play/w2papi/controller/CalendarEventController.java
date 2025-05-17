@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 import pl.where2play.w2papi.dto.CalendarEventDTO;
 import pl.where2play.w2papi.dto.request.CreateCalendarEventRequest;
 import pl.where2play.w2papi.dto.request.UpdateCalendarEventRequest;
@@ -26,7 +27,7 @@ import java.util.List;
  * Controller for calendar event endpoints.
  */
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping(ApiEndpoint.CalendarEvent.BASE)
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Calendar Events", description = "Calendar event management API")
@@ -43,7 +44,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the created event DTO
      */
-    @PostMapping
+    @PostMapping(ApiEndpoint.CalendarEvent.CREATE_EVENT)
     @Operation(summary = "Create event", description = "Create a new calendar event")
     public ResponseEntity<CalendarEventDTO> createEvent(
             @Valid @RequestBody CreateCalendarEventRequest request,
@@ -62,7 +63,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the updated event DTO
      */
-    @PutMapping("/{id}")
+    @PutMapping(ApiEndpoint.CalendarEvent.UPDATE_EVENT)
     @Operation(summary = "Update event", description = "Update an existing calendar event")
     public ResponseEntity<CalendarEventDTO> updateEvent(
             @PathVariable Long id,
@@ -82,7 +83,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return a success response
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ApiEndpoint.CalendarEvent.DELETE_EVENT)
     @Operation(summary = "Soft delete event", description = "Soft delete a calendar event (mark as deleted)")
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
@@ -102,7 +103,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return a success response
      */
-    @DeleteMapping("/{id}/hard")
+    @DeleteMapping(ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT)
     @Operation(summary = "Hard delete event", description = "Hard delete a calendar event (remove from database) - E2E tests only")
     public ResponseEntity<Void> hardDeleteEvent(
             @PathVariable Long id,
@@ -126,7 +127,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the event DTO
      */
-    @GetMapping("/{id}")
+    @GetMapping(ApiEndpoint.CalendarEvent.GET_EVENT)
     @Operation(summary = "Get event", description = "Get a calendar event by ID")
     public ResponseEntity<CalendarEventDTO> getEvent(
             @PathVariable Long id,
@@ -150,7 +151,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the list of event DTOs
      */
-    @GetMapping
+    @GetMapping(ApiEndpoint.CalendarEvent.GET_ALL_EVENTS)
     @Operation(summary = "Get all events", description = "Get all calendar events for the current user")
     public ResponseEntity<List<CalendarEventDTO>> getAllEvents(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -168,7 +169,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the list of event DTOs
      */
-    @GetMapping("/range")
+    @GetMapping(ApiEndpoint.CalendarEvent.GET_EVENTS_IN_RANGE)
     @Operation(summary = "Get events in date range", description = "Get calendar events for the current user in a date range")
     public ResponseEntity<List<CalendarEventDTO>> getEventsInDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
@@ -187,7 +188,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the list of synchronized event DTOs
      */
-    @PostMapping("/sync")
+    @PostMapping(ApiEndpoint.CalendarEvent.SYNC_EVENTS)
     @Operation(summary = "Synchronize events", description = "Synchronize events with an external calendar provider")
     public ResponseEntity<List<CalendarEventDTO>> synchronizeEvents(
             @RequestParam String provider,
@@ -214,7 +215,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the updated event DTO
      */
-    @PostMapping("/{eventId}/attendees/{userId}")
+    @PostMapping(ApiEndpoint.CalendarEvent.ADD_ATTENDEE)
     @Operation(summary = "Add attendee", description = "Add a user as an attendee to an event")
     public ResponseEntity<CalendarEventDTO> addAttendee(
             @PathVariable Long eventId,
@@ -234,7 +235,7 @@ public class CalendarEventController {
      * @param userDetails the authenticated user details
      * @return the updated event DTO
      */
-    @DeleteMapping("/{eventId}/attendees/{userId}")
+    @DeleteMapping(ApiEndpoint.CalendarEvent.REMOVE_ATTENDEE)
     @Operation(summary = "Remove attendee", description = "Remove a user as an attendee from an event")
     public ResponseEntity<CalendarEventDTO> removeAttendee(
             @PathVariable Long eventId,
