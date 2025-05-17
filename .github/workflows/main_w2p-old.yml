@@ -6,7 +6,7 @@ name: Build and deploy JAR app to Azure Web App - w2p
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'microsoft'
 
       - name: Build with Maven
@@ -52,9 +52,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2484BDDB7520461490B898173785E800 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CE1751ABA1E040AAB5484123C3045B8C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_29E1FBAC9AC44C54A5ECE3BAB1C785F5 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8ED1B674714A4824AADE2DF544D51FF8 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F172FC2C936D431297F4814B6E4982CD }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_DDB71F494EDC437C8BC5A6242B46D318 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
