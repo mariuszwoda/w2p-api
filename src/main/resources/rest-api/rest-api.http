@@ -69,3 +69,27 @@ GET http://localhost:8080/api/users/me
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlMmUtdGVzdEBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzM0NTMyMCwiZXhwIjoxNzQ3NDMxNzIwfQ.9D5-gPOEb2bTWV4w0ZmXmgiwA36OW5dTlitE5ilwVqbWz6YNXaO8OMvQ1kHCefwYba0547lfLn_rVJPPdYluXQ
 
 <> 2025-05-15T234928.200.json
+
+### get token from AZURE: "email": "e2e-test@example.com",
+
+POST https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/auth/login
+Content-Type: application/json
+
+{
+  "token": "test-token",
+  "provider": "GOOGLE"
+}
+
+###
+
+GET https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/users/me
+Authorization: {{token}}
+
+###
+
+GET https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/events
+Authorization: {{token}}
+###
+
+GET https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/users/1
+Authorization: {{token}}
