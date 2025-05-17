@@ -34,3 +34,6 @@ build/
 
 ### AI Assistant: Junie ###
 .junie/
+
+
+http-client.env.json
