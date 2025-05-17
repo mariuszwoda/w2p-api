@@ -139,11 +139,11 @@ public class GlobalExceptionHandler {
      * @return the error response
      */
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
         log.error("Authentication failed: {}", ex.getMessage());
         return new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 "Authentication failed: " + ex.getMessage(),
                 request.getDescription(false),
                 LocalDateTime.now()

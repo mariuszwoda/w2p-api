@@ -253,30 +253,36 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
     @Test
     @DisplayName("Test simple event creation")
     void testSimpleEventCreation() {
-        // Use testDataService to create the request
+        // Create a new event - exactly like in testFullEventLifecycle
         CreateCalendarEventRequest createRequest = testDataService.createTestCalendarEventRequest();
         createRequest.setTitle("Simple Test Event");
         createRequest.setDescription("Simple test description");
 
-        // Create the event
-        Response response = post(
+        Response createResponse = post(
                 ApiEndpoints.CalendarEvent.BASE,
                 RequestConfig.withBody(createRequest)
         );
 
-        // Verify response
-        Long eventId = response.then()
+        createResponse.then()
                 .statusCode(HttpStatus.OK.value())
-                .extract()
-                .path("id");
+                .body("title", equalTo(createRequest.getTitle()))
+                .body("description", equalTo(createRequest.getDescription()))
+                .body("location", equalTo(createRequest.getLocation()))
+                .body("owner.email", equalTo(testUser.getEmail()));
 
-        // Clean up
-        delete(
+        // Extract event ID for later use
+        Long eventId = Long.valueOf(createResponse.path("id").toString());
+
+        // Clean up - delete the event
+        Response deleteResponse = delete(
                 ApiEndpoints.CalendarEvent.HARD_DELETE_EVENT,
                 RequestConfig.builder()
                         .pathParams(Map.of("id", eventId))
                         .queryParams(Map.of("isE2ETest", true))
                         .build()
         );
+
+        deleteResponse.then()
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

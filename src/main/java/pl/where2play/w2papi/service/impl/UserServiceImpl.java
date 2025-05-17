@@ -33,27 +33,24 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public AuthResponse authenticate(AuthRequest authRequest) {
         log.info("Authenticating user with provider: {}", authRequest.getProvider());
-        
-        // In a real implementation, this would validate the token with the provider2
+
+        // In a real implementation, this would validate the token with the provider
         // and extract user information from the token
-        
+
         // For demonstration purposes, we'll create a mock implementation
         User.AuthProvider provider;
         try {
             provider = User.AuthProvider.valueOf(authRequest.getProvider().toUpperCase());
         } catch (IllegalArgumentException e) {
+            log.warn("Invalid authentication provider: {}", authRequest.getProvider());
             throw new BadCredentialsException("Invalid authentication provider: " + authRequest.getProvider());
         }
-        
-        // Mock user data (in a real implementation, this would come from the OAuth2 provider)
-//        String email = "user@example.com";
-        String email = "e2e-test@example.com";
-//        String name = "Example User";
-        String name = "E2E Test User";
-//        String pictureUrl = "https://example.com/profile.jpg";
-        String pictureUrl = "https://example.com/e2e.jpg";
-//        String providerId = "123456789";
-        String providerId = "e2e123";
+
+        // Mock user data based on provider (in a real implementation, this would come from the OAuth2 provider)
+        String email = "e2e-test-" + provider.name().toLowerCase() + "@example.com";
+        String name = "E2E Test User (" + provider.name() + ")";
+        String pictureUrl = "https://example.com/" + provider.name().toLowerCase() + ".jpg";
+        String providerId = "e2e-" + provider.name().toLowerCase() + "-123";
 
         // Find or create the user
         User user = userRepository.findByProviderAndProviderId(provider, providerId)
@@ -67,11 +64,11 @@ public class UserServiceImpl implements UserService {
                             .build();
                     return userRepository.save(newUser);
                 });
-        
+
         // Generate JWT token
         String token = jwtTokenProvider.generateToken(user.getEmail());
         long expirationInMs = 86400000; // 24 hours
-        
+
         return AuthResponse.success(token, UserDTO.fromEntity(user), expirationInMs);
     }
 

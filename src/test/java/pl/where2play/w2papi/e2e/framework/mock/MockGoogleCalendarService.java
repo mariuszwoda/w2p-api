@@ -53,8 +53,8 @@ public class MockGoogleCalendarService implements GoogleCalendarService {
 
     @Override
     public String getAuthorizationUrl() {
-        // Return a mock URL
-        return "https://mock-auth-url.example.com";
+        // Return a mock URL that contains accounts.google.com
+        return "https://accounts.google.com/o/oauth2/auth?client_id=mock-client-id&redirect_uri=http://localhost:8080/oauth2/callback/google&scope=https://www.googleapis.com/auth/calendar&response_type=code";
     }
 
     @Override
