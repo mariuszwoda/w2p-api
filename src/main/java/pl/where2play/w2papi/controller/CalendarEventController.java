@@ -89,7 +89,6 @@ public class CalendarEventController {
      */
     @DeleteMapping(ApiEndpoint.CalendarEvent.DELETE_EVENT)
     @Operation(summary = "Soft delete event", description = "Soft delete a calendar event (mark as deleted) - E2E tests only")
-    @Hidden
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
             @RequestParam(defaultValue = "false") boolean isE2ETest,
