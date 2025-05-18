@@ -160,7 +160,7 @@ class CalendarEventControllerTest {
         when(userService.getCurrentUser("test@example.com")).thenReturn(user);
 
         // When
-        ResponseEntity<Void> response = calendarEventController.deleteEvent(1L, userDetails);
+        ResponseEntity<Void> response = calendarEventController.deleteEvent(1L, true, userDetails);
 
         // Then
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -195,14 +195,14 @@ class CalendarEventControllerTest {
     void testGetAllEvents() {
         // Given
         when(userService.getCurrentUser("test@example.com")).thenReturn(user);
-        
+
         CalendarEventDTO event2 = CalendarEventDTO.builder()
                 .id(2L)
                 .title("Test Event 2")
                 .build();
-        
+
         List<CalendarEventDTO> events = Arrays.asList(eventDTO, event2);
-        
+
         when(calendarEventService.getAllEventsForUser(user)).thenReturn(events);
 
         // When
@@ -226,7 +226,7 @@ class CalendarEventControllerTest {
         // Given
         LocalDateTime start = now.minusHours(1);
         LocalDateTime end = now.plusHours(2);
-        
+
         when(userService.getCurrentUser("test@example.com")).thenReturn(user);
         when(calendarEventService.getEventsInDateRange(eq(user), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(List.of(eventDTO));

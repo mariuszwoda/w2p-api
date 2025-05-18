@@ -1,11 +1,13 @@
 package pl.where2play.w2papi.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -78,18 +80,28 @@ public class CalendarEventController {
     /**
      * Soft delete a calendar event.
      * This marks the event as deleted without removing it from the database.
+     * This endpoint is only for E2E tests.
      *
      * @param id the event ID
+     * @param isE2ETest flag indicating if this is an E2E test
      * @param userDetails the authenticated user details
      * @return a success response
      */
     @DeleteMapping(ApiEndpoint.CalendarEvent.DELETE_EVENT)
-    @Operation(summary = "Soft delete event", description = "Soft delete a calendar event (mark as deleted)")
+    @Operation(summary = "Soft delete event", description = "Soft delete a calendar event (mark as deleted) - E2E tests only")
+    @Hidden
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean isE2ETest,
             @AuthenticationPrincipal UserDetails userDetails) {
         log.info("Soft deleting calendar event with ID: {} for user: {}", id, userDetails.getUsername());
         User user = userService.getCurrentUser(userDetails.getUsername());
+
+        if (!isE2ETest) {
+            log.warn("Attempted soft delete without E2E test flag for event ID: {}", id);
+            return ResponseEntity.badRequest().build();
+        }
+
         eventService.deleteEvent(id, user);
         return ResponseEntity.noContent().build();
     }
@@ -97,7 +109,7 @@ public class CalendarEventController {
     /**
      * Hard delete a calendar event.
      * This completely removes the event from the database.
-     * This endpoint is only for E2E tests.
+     * This endpoint is only for E2E tests and is not available in production.
      *
      * @param id the event ID
      * @param userDetails the authenticated user details
@@ -105,6 +117,8 @@ public class CalendarEventController {
      */
     @DeleteMapping(ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT)
     @Operation(summary = "Hard delete event", description = "Hard delete a calendar event (remove from database) - E2E tests only")
+    @Profile("!prod")
+    @Hidden
     public ResponseEntity<Void> hardDeleteEvent(
             @PathVariable Long id,
             @RequestParam(defaultValue = "false") boolean isE2ETest,

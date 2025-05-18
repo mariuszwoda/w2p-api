@@ -138,7 +138,7 @@ public class CalendarEventIntegrationTest {
         // Create update request
         String updatedTitle = "Updated Integration Event";
         String updatedDescription = "Updated integration description";
-        
+
         String requestBody = String.format(
                 "{\"title\":\"%s\",\"description\":\"%s\"}",
                 updatedTitle, updatedDescription);
@@ -164,7 +164,8 @@ public class CalendarEventIntegrationTest {
     @WithMockUser(username = "integration-test@example.com")
     void testDeleteEvent() throws Exception {
         // Delete event
-        mockMvc.perform(delete("/api/events/{id}", testEvent.getId()))
+        mockMvc.perform(delete("/api/events/{id}", testEvent.getId())
+                .param("isE2ETest", "true"))
                 .andExpect(status().isNoContent());
 
         // Verify deletion
