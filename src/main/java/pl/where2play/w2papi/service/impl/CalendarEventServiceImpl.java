@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.where2play.w2papi.controller.CalendarEventController;
 import pl.where2play.w2papi.dto.CalendarEventDTO;
 import pl.where2play.w2papi.dto.request.CreateCalendarEventRequest;
 import pl.where2play.w2papi.dto.request.UpdateCalendarEventRequest;
@@ -183,8 +184,12 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
     @Override
     @Transactional
+    @org.springframework.context.annotation.Profile("dev")
     public void hardDeleteEvent(Long eventId, User user, boolean isE2ETest) {
         log.info("Hard deleting calendar event with ID: {} for user: {}", eventId, user.getEmail());
+
+        // Verify that this method is called only by CalendarEventController.hardDeleteEvent
+        verifyCallerIsControllerHardDeleteMethod();
 
         if (!isE2ETest) {
             throw new IllegalArgumentException("Hard delete is only allowed for E2E tests");
@@ -330,5 +335,35 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         CalendarEvent updatedEvent = eventRepository.save(event);
 
         return CalendarEventDTO.fromEntity(updatedEvent);
+    }
+
+    /**
+     * Verifies that the caller of this method is the hardDeleteEvent method in CalendarEventController.
+     * Also allows calls from test classes.
+     * Throws SecurityException if the caller is not authorized.
+     */
+    private void verifyCallerIsControllerHardDeleteMethod() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        boolean calledFromControllerHardDeleteMethod = false;
+        boolean calledFromTestClass = false;
+
+        for (int i = 1; i < stackTrace.length; i++) {
+            StackTraceElement element = stackTrace[i];
+            // Allow calls from CalendarEventController.hardDeleteEvent
+            if (element.getClassName().equals(CalendarEventController.class.getName()) && 
+                element.getMethodName().equals("hardDeleteEvent")) {
+                calledFromControllerHardDeleteMethod = true;
+                break;
+            }
+            // Allow calls from test classes
+            if (element.getClassName().contains("Test")) {
+                calledFromTestClass = true;
+                break;
+            }
+        }
+
+        if (!calledFromControllerHardDeleteMethod && !calledFromTestClass) {
+            throw new SecurityException("The hardDeleteEvent method can only be called from CalendarEventController.hardDeleteEvent");
+        }
     }
 }
