@@ -33,8 +33,8 @@ public class OpenApiConfig {
                                 .email("contact@where2play.pl")
                                 .url("https://where2play.pl"))
                         .license(new License()
-                                .name("MIT License")
-                                .url("https://opensource.org/licenses/MIT")))
+                                .name("Apache License 2.0")
+                                .url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()));

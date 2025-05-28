@@ -1,6 +1,5 @@
 package pl.where2play.w2papi.service.impl;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -9,6 +8,8 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,8 +74,14 @@ public class GoogleCalendarServiceImpl implements GoogleCalendarService {
             }
 
             return calendarEvents;
-        } catch (Exception e) {
-            log.error("Error fetching events from Google Calendar", e);
+        } catch (GeneralSecurityException e) {
+            log.error("Security error when fetching events from Google Calendar", e);
+            return Collections.emptyList();
+        } catch (IOException e) {
+            log.error("I/O error when fetching events from Google Calendar", e);
+            return Collections.emptyList();
+        } catch (RuntimeException e) {
+            log.error("Unexpected error when fetching events from Google Calendar", e);
             return Collections.emptyList();
         }
     }
@@ -98,8 +106,14 @@ public class GoogleCalendarServiceImpl implements GoogleCalendarService {
             event.setProvider(CalendarEvent.CalendarProvider.GOOGLE);
 
             return event;
-        } catch (Exception e) {
-            log.error("Error creating event in Google Calendar", e);
+        } catch (GeneralSecurityException e) {
+            log.error("Security error when creating event in Google Calendar", e);
+            return event;
+        } catch (IOException e) {
+            log.error("I/O error when creating event in Google Calendar", e);
+            return event;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error when creating event in Google Calendar", e);
             return event;
         }
     }
@@ -120,8 +134,14 @@ public class GoogleCalendarServiceImpl implements GoogleCalendarService {
             service.events().update("primary", event.getExternalId(), googleEvent).execute();
 
             return event;
-        } catch (Exception e) {
-            log.error("Error updating event in Google Calendar", e);
+        } catch (GeneralSecurityException e) {
+            log.error("Security error when updating event in Google Calendar", e);
+            return event;
+        } catch (IOException e) {
+            log.error("I/O error when updating event in Google Calendar", e);
+            return event;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error when updating event in Google Calendar", e);
             return event;
         }
     }
@@ -137,8 +157,12 @@ public class GoogleCalendarServiceImpl implements GoogleCalendarService {
 
             // Delete event
             service.events().delete("primary", event.getExternalId()).execute();
-        } catch (Exception e) {
-            log.error("Error deleting event from Google Calendar", e);
+        } catch (GeneralSecurityException e) {
+            log.error("Security error when deleting event from Google Calendar", e);
+        } catch (IOException e) {
+            log.error("I/O error when deleting event from Google Calendar", e);
+        } catch (RuntimeException e) {
+            log.error("Unexpected error when deleting event from Google Calendar", e);
         }
     }
 
@@ -153,7 +177,7 @@ public class GoogleCalendarServiceImpl implements GoogleCalendarService {
         // Get existing events from our database
         List<CalendarEvent> existingEvents = eventRepository.findByOwner(user).stream()
                 .filter(e -> e.getProvider() == CalendarEvent.CalendarProvider.GOOGLE && e.getExternalId() != null)
-                .collect(Collectors.toList());
+                .toList();
 
         // Create a map of external IDs to existing events
         java.util.Map<String, CalendarEvent> existingEventMap = existingEvents.stream()
@@ -225,14 +249,14 @@ public class GoogleCalendarServiceImpl implements GoogleCalendarService {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
         // Create a mock credential (in a real app, this would use the user's token)
-        GoogleCredential credential = new GoogleCredential.Builder()
-                .setClientSecrets(clientId, clientSecret)
-                .setJsonFactory(JSON_FACTORY)
-                .setTransport(HTTP_TRANSPORT)
-                .build();
+        GoogleCredentials credentials = GoogleCredentials.create(null)
+                .createScoped(Arrays.asList("https://www.googleapis.com/auth/calendar"));
+
+        // Use HttpCredentialsAdapter to adapt GoogleCredentials to HttpRequestInitializer
+        HttpCredentialsAdapter credentialsAdapter = new HttpCredentialsAdapter(credentials);
 
         // Build the calendar service
-        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+        return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentialsAdapter)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }

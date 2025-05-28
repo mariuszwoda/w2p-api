@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="04" author="w2p" runAlways="false">
+        <!-- Create roles table -->
+        <createTable tableName="roles">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+        </createTable>
+
+        <!-- Create user_roles junction table -->
+        <createTable tableName="user_roles">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_roles_user" references="users(id)"/>
+            </column>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_roles_role" references="roles(id)"/>
+            </column>
+        </createTable>
+        
+        <addPrimaryKey tableName="user_roles" columnNames="user_id, role_id"/>
+
+        <!-- Insert default roles -->
+        <insert tableName="roles">
+            <column name="name">ROLE_ADMIN</column>
+            <column name="description">Administrator role with full access</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">ROLE_USER</column>
+            <column name="description">Regular user role with limited access</column>
+        </insert>
+        <insert tableName="roles">
+            <column name="name">ROLE_E2E_TEST</column>
+            <column name="description">Role for E2E testing with special permissions</column>
+        </insert>
+
+        <!-- Assign roles to sample users -->
+        <!-- Admin user -->
+        <insert tableName="user_roles">
+            <column name="user_id">1</column>
+            <column name="role_id">1</column>
+        </insert>
+        
+        <!-- Regular user -->
+        <insert tableName="user_roles">
+            <column name="user_id">2</column>
+            <column name="role_id">2</column>
+        </insert>
+        
+        <!-- Google user -->
+        <insert tableName="user_roles">
+            <column name="user_id">3</column>
+            <column name="role_id">2</column>
+        </insert>
+        
+        <!-- Facebook user -->
+        <insert tableName="user_roles">
+            <column name="user_id">4</column>
+            <column name="role_id">2</column>
+        </insert>
+        
+        <!-- E2E test user -->
+        <insert tableName="user_roles">
+            <column name="user_id">5</column>
+            <column name="role_id">3</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

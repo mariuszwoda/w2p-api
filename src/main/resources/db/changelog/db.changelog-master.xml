@@ -8,5 +8,7 @@
     <!-- Include all changelog files -->
     <include file="classpath:db/changelog/changes/01-create-tables.xml"/>
     <include file="classpath:db/changelog/changes/02-sample-users.xml"/>
+    <include file="classpath:db/changelog/changes/03-add-soft-delete-columns.xml"/>
+    <include file="classpath:db/changelog/changes/04-add-user-roles.xml"/>
 
 </databaseChangeLog>

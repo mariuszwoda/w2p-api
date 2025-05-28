@@ -58,7 +58,7 @@ Content-Type: application/json
 
 {
   "token": "test-token",
-  "provider": "GOOGLE"
+  "provider": "LOCAL"
 }
 
 <> 2025-05-15T234200.200.json

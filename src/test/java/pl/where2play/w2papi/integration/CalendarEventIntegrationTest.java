@@ -26,9 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "test"})
 @Transactional
-public class CalendarEventIntegrationTest {
+class CalendarEventIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -117,8 +117,8 @@ public class CalendarEventIntegrationTest {
 
         // Perform request
         mockMvc.perform(post("/api/events")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.title").value("New Integration Event"))
@@ -145,8 +145,8 @@ public class CalendarEventIntegrationTest {
 
         // Perform update
         mockMvc.perform(put("/api/events/{id}", testEvent.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(testEvent.getId()))
@@ -165,7 +165,7 @@ public class CalendarEventIntegrationTest {
     void testDeleteEvent() throws Exception {
         // Delete event
         mockMvc.perform(delete("/api/events/{id}", testEvent.getId())
-                .param("isE2ETest", "true"))
+                        .param("isE2ETest", "true"))
                 .andExpect(status().isNoContent());
 
         // Verify deletion
@@ -192,24 +192,24 @@ public class CalendarEventIntegrationTest {
 
         // Get today's events
         mockMvc.perform(get("/api/events/range")
-                .param("start", now.minusHours(1).toString())
-                .param("end", now.plusHours(2).toString()))
+                        .param("start", now.minusHours(1).toString())
+                        .param("end", now.plusHours(2).toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(testEvent.getId()));
 
         // Get tomorrow's events
         mockMvc.perform(get("/api/events/range")
-                .param("start", now.plusDays(1).minusHours(1).toString())
-                .param("end", now.plusDays(1).plusHours(2).toString()))
+                        .param("start", now.plusDays(1).minusHours(1).toString())
+                        .param("end", now.plusDays(1).plusHours(2).toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].title").value("Tomorrow Event"));
 
         // Get all events
         mockMvc.perform(get("/api/events/range")
-                .param("start", now.minusHours(1).toString())
-                .param("end", now.plusDays(2).toString()))
+                        .param("start", now.minusHours(1).toString())
+                        .param("end", now.plusDays(2).toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }

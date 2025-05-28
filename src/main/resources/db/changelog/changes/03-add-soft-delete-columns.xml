@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="03" author="w2p" runAlways="false">
+        <!-- Add deleted flag to calendar_events table -->
+        <addColumn tableName="calendar_events">
+            <column name="deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <!-- Add deleted_at timestamp to calendar_events table -->
+        <addColumn tableName="calendar_events">
+            <column name="deleted_at" type="timestamp"/>
+        </addColumn>
+
+        <!-- Add index for faster queries on deleted flag -->
+        <createIndex indexName="idx_calendar_events_deleted"
+                     tableName="calendar_events">
+            <column name="deleted"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -18,17 +18,17 @@ import static pl.where2play.w2papi.constants.ApiEndpoint.User.BASE;
 /**
  * E2E tests for the User Controller.
  */
-public class UserControllerE2ETest extends BaseApiTest {
+class UserControllerE2ETest extends BaseApiTest {
 
     @Test
     @DisplayName("Test getting current user profile")
     void testGetCurrentUserProfile() {
         // Test getting current user profile
         Response response = get(
-                BASE+ApiEndpoint.User.CURRENT_USER,
+                BASE + ApiEndpoint.User.CURRENT_USER,
                 RequestConfig.empty()
         );
-        
+
         // Verify response
         response.then()
                 .statusCode(HttpStatus.OK.value())
@@ -43,15 +43,15 @@ public class UserControllerE2ETest extends BaseApiTest {
         // Test updating user profile
         String newName = "Updated E2E Test User " + UUID.randomUUID();
         String newPictureUrl = "https://example.com/updated-picture.jpg";
-        
+
         Response response = put(
-                BASE+ApiEndpoint.User.UPDATE_PROFILE,
+                BASE + ApiEndpoint.User.UPDATE_PROFILE,
                 RequestConfig.withQueryParams(Map.of(
                         "name", newName,
                         "pictureUrl", newPictureUrl
                 ))
         );
-        
+
         // Verify response
         response.then()
                 .statusCode(HttpStatus.OK.value())
@@ -59,13 +59,13 @@ public class UserControllerE2ETest extends BaseApiTest {
                 .body("email", equalTo(testUser.getEmail()))
                 .body("name", equalTo(newName))
                 .body("pictureUrl", equalTo(newPictureUrl));
-        
+
         // Verify the update by getting the user profile again
         Response verifyResponse = get(
-                BASE+ApiEndpoint.User.CURRENT_USER,
+                BASE + ApiEndpoint.User.CURRENT_USER,
                 RequestConfig.empty()
         );
-        
+
         verifyResponse.then()
                 .statusCode(HttpStatus.OK.value())
                 .body("name", equalTo(newName))
@@ -84,13 +84,13 @@ public class UserControllerE2ETest extends BaseApiTest {
                 .providerId("search-test-" + UUID.randomUUID())
                 .build();
         userRepository.save(searchableUser);
-        
+
         // Test searching for users
         Response response = get(
-                BASE+ApiEndpoint.User.SEARCH_USERS,
+                BASE + ApiEndpoint.User.SEARCH_USERS,
                 RequestConfig.withQueryParams(Map.of("query", uniqueName))
         );
-        
+
         // Verify response
         response.then()
                 .statusCode(HttpStatus.OK.value())
@@ -103,10 +103,10 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testGetUserById() {
         // Test getting user by ID
         Response response = get(
-                BASE+ApiEndpoint.User.GET_USER,
+                BASE + ApiEndpoint.User.GET_USER,
                 RequestConfig.withPathParams(Map.of("id", testUser.getId()))
         );
-        
+
         // Verify response
         response.then()
                 .statusCode(HttpStatus.OK.value())
@@ -120,10 +120,10 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testGetNonExistentUser() {
         // Test getting non-existent user
         Response response = get(
-                BASE+ApiEndpoint.User.GET_USER,
+                BASE + ApiEndpoint.User.GET_USER,
                 RequestConfig.withPathParams(Map.of("id", 999999L))
         );
-        
+
         // Verify response
         response.then()
                 .statusCode(HttpStatus.NOT_FOUND.value());
@@ -134,11 +134,11 @@ public class UserControllerE2ETest extends BaseApiTest {
     void testUnauthorizedAccess() {
         // Try to access protected endpoint without authentication
         Response response = requestWithoutAuth(
-                BASE+ApiEndpoint.User.CURRENT_USER,
+                BASE + ApiEndpoint.User.CURRENT_USER,
                 "GET",
                 RequestConfig.empty()
         );
-        
+
         // Verify response
         response.then()
                 .statusCode(HttpStatus.FORBIDDEN.value());

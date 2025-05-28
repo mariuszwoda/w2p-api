@@ -24,8 +24,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev")
-public class CalendarEventE2ETest {
+@ActiveProfiles({"dev", "test"})
+class CalendarEventE2ETest {
 
     @LocalServerPort
     private int port;

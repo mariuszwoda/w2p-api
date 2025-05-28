@@ -5,11 +5,14 @@ A Spring Boot-based RESTful API for calendar events with Google Calendar integra
 ## Features
 
 - **Calendar Event Management**: Create, read, update, and delete calendar events
+- **Soft Delete & Hard Delete**: Soft delete for real users, hard delete for E2E tests
 - **Google Calendar Integration**: Synchronize events with Google Calendar
 - **OAuth2 Authentication**: Authenticate users via Google and Facebook
+- **Role-based Access Control**: Different permissions for different user roles
 - **JWT-based Security**: Secure API endpoints with JWT tokens
 - **Swagger Documentation**: Interactive API documentation
 - **Multi-environment Support**: Development (H2) and Production (PostgreSQL) environments
+- **Liquibase Migrations**: Database schema versioning and sample data
 
 ## Technology Stack
 
@@ -103,7 +106,8 @@ This provides interactive documentation for all API endpoints.
 - `POST /api/events`: Create a new event
 - `GET /api/events/{id}`: Get event by ID
 - `PUT /api/events/{id}`: Update an event
-- `DELETE /api/events/{id}`: Delete an event
+- `DELETE /api/events/{id}`: Soft delete an event (for real users)
+- `DELETE /api/events/{id}/hard`: Hard delete an event (for E2E tests only)
 - `GET /api/events/range`: Get events in a date range
 - `POST /api/events/sync`: Synchronize events with external calendar
 - `POST /api/events/{eventId}/attendees/{userId}`: Add attendee to event
@@ -131,8 +135,8 @@ mvn test -Dtest=UserRepositoryTest#testFindByEmail
 
 ## Future Improvements
 
-See [Future Improvements](src/main/resources/docs/future-improvements.md) for a roadmap of planned enhancements.
+See [Improvement Plan](docs/improvement-plan.md) for a roadmap of planned enhancements.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE.txt](LICENSE.txt) file for details.

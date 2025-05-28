@@ -223,8 +223,8 @@ public class CalendarEventServiceImpl implements CalendarEventService {
                 .orElseThrow(() -> ResourceNotFoundException.forResource("Event", "ID", eventId));
 
         // Check if the user is the owner or an attendee
-        if (!event.getOwner().getId().equals(user.getId()) && 
-                !event.getAttendees().stream().anyMatch(a -> a.getId().equals(user.getId()))) {
+        if (!event.getOwner().getId().equals(user.getId()) &&
+                event.getAttendees().stream().noneMatch(a -> a.getId().equals(user.getId()))) {
             throw ForbiddenException.forResource("Event", eventId);
         }
 
@@ -240,7 +240,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
         return events.stream()
                 .map(CalendarEventDTO::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -252,7 +252,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
         return events.stream()
                 .map(CalendarEventDTO::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -270,7 +270,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
         return events.stream()
                 .map(CalendarEventDTO::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

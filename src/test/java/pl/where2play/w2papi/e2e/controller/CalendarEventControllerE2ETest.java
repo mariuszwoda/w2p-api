@@ -3,21 +3,17 @@ package pl.where2play.w2papi.e2e.controller;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import pl.where2play.w2papi.constants.ApiEndpoint;
 import pl.where2play.w2papi.dto.request.CreateCalendarEventRequest;
 import pl.where2play.w2papi.dto.request.UpdateCalendarEventRequest;
 import pl.where2play.w2papi.e2e.framework.BaseApiTest;
 import pl.where2play.w2papi.e2e.framework.RequestConfig;
-import pl.where2play.w2papi.constants.ApiEndpoint;
 import pl.where2play.w2papi.e2e.framework.util.JsonUtils;
-import pl.where2play.w2papi.model.CalendarEvent;
 import pl.where2play.w2papi.model.User;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -26,7 +22,7 @@ import static pl.where2play.w2papi.constants.ApiEndpoint.CalendarEvent.BASE;
 /**
  * E2E tests for the Calendar Event Controller.
  */
-public class CalendarEventControllerE2ETest extends BaseApiTest {
+class CalendarEventControllerE2ETest extends BaseApiTest {
 
     @Autowired
     private JsonUtils jsonUtils;
@@ -54,7 +50,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 2. Get the created event
         Response getResponse = get(
-                BASE+ ApiEndpoint.CalendarEvent.GET_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.GET_EVENT,
                 RequestConfig.withPathParams(Map.of("id", eventId))
         );
 
@@ -80,7 +76,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
         UpdateCalendarEventRequest updateRequest = testDataService.createTestCalendarEventUpdateRequest();
 
         Response updateResponse = put(
-                BASE+ApiEndpoint.CalendarEvent.UPDATE_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.UPDATE_EVENT,
                 RequestConfig.builder()
                         .pathParams(Map.of("id", eventId))
                         .body(updateRequest)
@@ -95,7 +91,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 5. Verify the update
         Response verifyUpdateResponse = get(
-                BASE+ApiEndpoint.CalendarEvent.GET_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.GET_EVENT,
                 RequestConfig.withPathParams(Map.of("id", eventId))
         );
 
@@ -108,7 +104,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
         LocalDateTime now = LocalDateTime.now();
 
         Response dateRangeResponse = get(
-                BASE+ApiEndpoint.CalendarEvent.GET_EVENTS_IN_RANGE,
+                BASE + ApiEndpoint.CalendarEvent.GET_EVENTS_IN_RANGE,
                 RequestConfig.withQueryParams(Map.of(
                         "start", now.minusDays(1).toString(),
                         "end", now.plusDays(1).toString()
@@ -122,7 +118,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 7. Hard delete the event (for E2E tests)
         Response deleteResponse = delete(
-                BASE+ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT,
                 RequestConfig.builder()
                         .pathParams(Map.of("id", eventId))
                         .queryParams(Map.of("isE2ETest", true))
@@ -134,7 +130,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 8. Verify deletion
         Response verifyDeletionResponse = get(
-                BASE+ApiEndpoint.CalendarEvent.GET_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.GET_EVENT,
                 RequestConfig.withPathParams(Map.of("id", eventId))
         );
 
@@ -202,7 +198,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 3. Add attendee to the event
         Response addAttendeeResponse = post(
-                BASE+ ApiEndpoint.CalendarEvent.ADD_ATTENDEE,
+                BASE + ApiEndpoint.CalendarEvent.ADD_ATTENDEE,
                 RequestConfig.withPathParams(Map.of(
                         "eventId", eventId,
                         "userId", attendee.getId()
@@ -214,7 +210,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 4. Remove attendee from the event
         Response removeAttendeeResponse = delete(
-                BASE+ ApiEndpoint.CalendarEvent.REMOVE_ATTENDEE,
+                BASE + ApiEndpoint.CalendarEvent.REMOVE_ATTENDEE,
                 RequestConfig.withPathParams(Map.of(
                         "eventId", eventId,
                         "userId", attendee.getId()
@@ -226,7 +222,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // 5. Clean up - delete the event
         Response deleteResponse = delete(
-                BASE+ ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT,
                 RequestConfig.builder()
                         .pathParams(Map.of("id", eventId))
                         .queryParams(Map.of("isE2ETest", true))
@@ -276,7 +272,7 @@ public class CalendarEventControllerE2ETest extends BaseApiTest {
 
         // Clean up - delete the event
         Response deleteResponse = delete(
-                BASE+ ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT,
+                BASE + ApiEndpoint.CalendarEvent.HARD_DELETE_EVENT,
                 RequestConfig.builder()
                         .pathParams(Map.of("id", eventId))
                         .queryParams(Map.of("isE2ETest", true))

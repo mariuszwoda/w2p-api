@@ -14,8 +14,6 @@ import pl.where2play.w2papi.model.User;
 import pl.where2play.w2papi.repository.UserRepository;
 import pl.where2play.w2papi.security.JwtTokenProvider;
 
-import java.util.Map;
-
 import static io.restassured.RestAssured.given;
 
 /**

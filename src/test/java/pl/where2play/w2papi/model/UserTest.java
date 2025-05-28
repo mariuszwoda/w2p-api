@@ -1,9 +1,8 @@
 package pl.where2play.w2papi.model;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 

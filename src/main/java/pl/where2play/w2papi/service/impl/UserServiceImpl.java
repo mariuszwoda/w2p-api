@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         // For simplicity, we'll just return all users
         return userRepository.findAll().stream()
                 .map(UserDTO::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
