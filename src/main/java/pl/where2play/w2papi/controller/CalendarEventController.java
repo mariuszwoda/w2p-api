@@ -8,6 +8,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -162,15 +166,35 @@ public class CalendarEventController {
      * Get all events for the current user.
      *
      * @param userDetails the authenticated user details
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sort the sort field
+     * @param direction the sort direction
      * @return the list of event DTOs
      */
     @GetMapping(ApiEndpoint.CalendarEvent.GET_ALL_EVENTS)
     @Operation(summary = "Get all events", description = "Get all calendar events for the current user")
-    public ResponseEntity<List<CalendarEventDTO>> getAllEvents(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("Getting all calendar events for user: {}", userDetails.getUsername());
+    public ResponseEntity<?> getAllEvents(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "startTime") String sort,
+            @RequestParam(defaultValue = "DESC") String direction) {
+        log.info("Getting all calendar events for user: {} (page: {}, size: {})", userDetails.getUsername(), page, size);
         User user = userService.getCurrentUser(userDetails.getUsername());
-        List<CalendarEventDTO> events = eventService.getAllEventsForUser(user);
+
+        // If pagination parameters are not provided, return all events
+        if (page < 0 || size <= 0) {
+            List<CalendarEventDTO> events = eventService.getAllEventsForUser(user);
+            return ResponseEntity.ok(events);
+        }
+
+        // Create pageable object
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        // Get paginated events
+        Page<CalendarEventDTO> events = eventService.getAllEventsForUser(user, pageable);
         return ResponseEntity.ok(events);
     }
 
@@ -180,17 +204,38 @@ public class CalendarEventController {
      * @param start the start date
      * @param end the end date
      * @param userDetails the authenticated user details
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sort the sort field
+     * @param direction the sort direction
      * @return the list of event DTOs
      */
     @GetMapping(ApiEndpoint.CalendarEvent.GET_EVENTS_IN_RANGE)
     @Operation(summary = "Get events in date range", description = "Get calendar events for the current user in a date range")
-    public ResponseEntity<List<CalendarEventDTO>> getEventsInDateRange(
+    public ResponseEntity<?> getEventsInDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("Getting calendar events for user: {} in date range: {} to {}", userDetails.getUsername(), start, end);
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "startTime") String sort,
+            @RequestParam(defaultValue = "DESC") String direction) {
+        log.info("Getting calendar events for user: {} in date range: {} to {} (page: {}, size: {})", 
+                userDetails.getUsername(), start, end, page, size);
         User user = userService.getCurrentUser(userDetails.getUsername());
-        List<CalendarEventDTO> events = eventService.getEventsInDateRange(user, start, end);
+
+        // If pagination parameters are not provided, return all events
+        if (page < 0 || size <= 0) {
+            List<CalendarEventDTO> events = eventService.getEventsInDateRange(user, start, end);
+            return ResponseEntity.ok(events);
+        }
+
+        // Create pageable object
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        // Get paginated events
+        Page<CalendarEventDTO> events = eventService.getEventsInDateRange(user, start, end, pageable);
         return ResponseEntity.ok(events);
     }
 
@@ -199,14 +244,23 @@ public class CalendarEventController {
      *
      * @param provider the calendar provider
      * @param userDetails the authenticated user details
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sort the sort field
+     * @param direction the sort direction
      * @return the list of synchronized event DTOs
      */
     @PostMapping(ApiEndpoint.CalendarEvent.SYNC_EVENTS)
     @Operation(summary = "Synchronize events", description = "Synchronize events with an external calendar provider")
-    public ResponseEntity<List<CalendarEventDTO>> synchronizeEvents(
+    public ResponseEntity<?> synchronizeEvents(
             @RequestParam String provider,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("Synchronizing calendar events for user: {} with provider: {}", userDetails.getUsername(), provider);
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "startTime") String sort,
+            @RequestParam(defaultValue = "DESC") String direction) {
+        log.info("Synchronizing calendar events for user: {} with provider: {} (page: {}, size: {})", 
+                userDetails.getUsername(), provider, page, size);
         User user = userService.getCurrentUser(userDetails.getUsername());
 
         CalendarEvent.CalendarProvider calendarProvider;
@@ -216,7 +270,18 @@ public class CalendarEventController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<CalendarEventDTO> events = eventService.synchronizeEvents(user, calendarProvider);
+        // If pagination parameters are not provided, return all events
+        if (page < 0 || size <= 0) {
+            List<CalendarEventDTO> events = eventService.synchronizeEvents(user, calendarProvider);
+            return ResponseEntity.ok(events);
+        }
+
+        // Create pageable object
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        // Get paginated events
+        Page<CalendarEventDTO> events = eventService.synchronizeEvents(user, calendarProvider, pageable);
         return ResponseEntity.ok(events);
     }
 

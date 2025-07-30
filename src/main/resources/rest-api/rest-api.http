@@ -72,7 +72,8 @@ Authorization: {{token}}
 
 ### get token from AZURE: "email": "e2e-test@example.com",
 
-POST https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/auth/login
+#POST https://{{url1}}.polandcentral-01.azurewebsites.net/api/auth/login
+POST https://{{url2}}.polandcentral-01.azurewebsites.net/api/auth/login
 Content-Type: application/json
 
 {
@@ -82,14 +83,14 @@ Content-Type: application/json
 
 ###
 
-GET https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/users/me
+GET https://{{url2}}.polandcentral-01.azurewebsites.net/api/users/me
 Authorization: {{token}}
 
 ###
 
-GET https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/events
+GET https://{{url2}}.polandcentral-01.azurewebsites.net/api/events
 Authorization: {{token}}
 ###
 
-GET https://w2p-axa7btg7c7d8amc7.polandcentral-01.azurewebsites.net/api/users/1
+GET https://{{url2}}.polandcentral-01.azurewebsites.net/api/users/1
 Authorization: {{token}}

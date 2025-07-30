@@ -52,6 +52,26 @@ public class JwtTokenProvider {
     }
 
     /**
+     * Generate a temporary MFA token for a user.
+     * This token has a shorter expiration time and is used only for MFA verification.
+     *
+     * @param userEmail the user's email
+     * @return the MFA token
+     */
+    public String generateMfaToken(String userEmail) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + 300000); // 5 minutes
+
+        return Jwts.builder()
+                .setSubject(userEmail)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .claim("tokenType", "MFA")
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    /**
      * Get the user email from a JWT token.
      *
      * @param token the JWT token
@@ -84,6 +104,29 @@ public class JwtTokenProvider {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    /**
+     * Validate an MFA token.
+     * This method checks if the token is valid and has the MFA claim.
+     *
+     * @param token the MFA token
+     * @return true if the token is a valid MFA token, false otherwise
+     */
+    public boolean validateMfaToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            // Check if the token has the MFA claim
+            return "MFA".equals(claims.get("tokenType"));
+        } catch (Exception e) {
+            log.error("Invalid MFA token: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**

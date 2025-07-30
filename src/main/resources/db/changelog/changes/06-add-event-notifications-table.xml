@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="06" author="w2p" runAlways="false">
+        <!-- Create event_notifications table -->
+        <createTable tableName="event_notifications">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_event_notifications_event" references="calendar_events(id)"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_event_notifications_user" references="users(id)"/>
+            </column>
+            <column name="minutes_before" type="int" remarks="Time before the event when the notification should be sent">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_time" type="timestamp" remarks="Time when the notification should be sent">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_at" type="timestamp" remarks="Time when the notification was sent">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="varchar(20)" remarks="PENDING, SENT, FAILED, CANCELLED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel" type="varchar(20)" remarks="EMAIL, SMS, PUSH, IN_APP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="varchar(1000)" remarks="Custom notification content">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add indexes for better performance -->
+        <createIndex indexName="idx_event_notifications_event_id"
+                     tableName="event_notifications">
+            <column name="event_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_event_notifications_user_id"
+                     tableName="event_notifications">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_event_notifications_notification_time"
+                     tableName="event_notifications">
+            <column name="notification_time"/>
+        </createIndex>
+
+        <createIndex indexName="idx_event_notifications_status"
+                     tableName="event_notifications">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

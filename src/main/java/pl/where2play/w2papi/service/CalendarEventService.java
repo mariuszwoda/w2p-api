@@ -1,5 +1,7 @@
 package pl.where2play.w2papi.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import pl.where2play.w2papi.dto.CalendarEventDTO;
 import pl.where2play.w2papi.dto.request.CreateCalendarEventRequest;
 import pl.where2play.w2papi.dto.request.UpdateCalendarEventRequest;
@@ -72,6 +74,15 @@ public interface CalendarEventService {
     List<CalendarEventDTO> getAllEventsForUser(User user);
 
     /**
+     * Get all events for a user with pagination.
+     *
+     * @param user the user
+     * @param pageable the pagination information
+     * @return the paginated list of event DTOs
+     */
+    Page<CalendarEventDTO> getAllEventsForUser(User user, Pageable pageable);
+
+    /**
      * Get all events for a user in a date range.
      *
      * @param user the user
@@ -82,6 +93,17 @@ public interface CalendarEventService {
     List<CalendarEventDTO> getEventsInDateRange(User user, LocalDateTime start, LocalDateTime end);
 
     /**
+     * Get all events for a user in a date range with pagination.
+     *
+     * @param user the user
+     * @param start the start date
+     * @param end the end date
+     * @param pageable the pagination information
+     * @return the paginated list of event DTOs
+     */
+    Page<CalendarEventDTO> getEventsInDateRange(User user, LocalDateTime start, LocalDateTime end, Pageable pageable);
+
+    /**
      * Synchronize events with an external calendar provider.
      *
      * @param user the user
@@ -89,6 +111,16 @@ public interface CalendarEventService {
      * @return the list of synchronized event DTOs
      */
     List<CalendarEventDTO> synchronizeEvents(User user, CalendarEvent.CalendarProvider provider);
+
+    /**
+     * Synchronize events with an external calendar provider with pagination.
+     *
+     * @param user the user
+     * @param provider the calendar provider
+     * @param pageable the pagination information
+     * @return the paginated list of synchronized event DTOs
+     */
+    Page<CalendarEventDTO> synchronizeEvents(User user, CalendarEvent.CalendarProvider provider, Pageable pageable);
 
     /**
      * Add a user as an attendee to an event.

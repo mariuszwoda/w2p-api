@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="07" author="w2p" runAlways="false">
+        <!-- Add indexes for better performance on frequently queried fields -->
+        
+        <!-- Indexes for calendar_events table -->
+        <createIndex indexName="idx_calendar_events_start_time"
+                     tableName="calendar_events">
+            <column name="start_time"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_events_end_time"
+                     tableName="calendar_events">
+            <column name="end_time"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_events_owner_id"
+                     tableName="calendar_events">
+            <column name="owner_id"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_events_provider"
+                     tableName="calendar_events">
+            <column name="calendar_provider"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_events_external_id"
+                     tableName="calendar_events">
+            <column name="external_id"/>
+        </createIndex>
+        
+        <!-- Composite index for date range queries -->
+        <createIndex indexName="idx_calendar_events_owner_date_range"
+                     tableName="calendar_events">
+            <column name="owner_id"/>
+            <column name="start_time"/>
+            <column name="end_time"/>
+        </createIndex>
+        
+        <!-- Indexes for users table -->
+        <createIndex indexName="idx_users_provider_provider_id"
+                     tableName="users">
+            <column name="auth_provider"/>
+            <column name="provider_id"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_users_name"
+                     tableName="users">
+            <column name="name"/>
+        </createIndex>
+        
+        <!-- Indexes for event_attendees junction table -->
+        <createIndex indexName="idx_event_attendees_user_id"
+                     tableName="event_attendees">
+            <column name="user_id"/>
+        </createIndex>
+        
+        <!-- Indexes for calendar_shares table -->
+        <createIndex indexName="idx_calendar_shares_user_id"
+                     tableName="calendar_shares">
+            <column name="user_id"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_shares_shared_email"
+                     tableName="calendar_shares">
+            <column name="shared_email"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_shares_share_token"
+                     tableName="calendar_shares">
+            <column name="share_token"/>
+        </createIndex>
+        
+        <createIndex indexName="idx_calendar_shares_expires_at"
+                     tableName="calendar_shares">
+            <column name="expires_at"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

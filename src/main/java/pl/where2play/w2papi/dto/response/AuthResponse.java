@@ -14,12 +14,14 @@ import pl.where2play.w2papi.dto.UserDTO;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponse {
-    
+
     private String token;
     private String tokenType;
     private long expiresIn;
     private UserDTO user;
-    
+    private boolean mfaRequired;
+    private String mfaToken;
+
     /**
      * Creates a successful authentication response.
      *
@@ -34,6 +36,25 @@ public class AuthResponse {
                 .tokenType("Bearer")
                 .expiresIn(expiresIn)
                 .user(user)
+                .mfaRequired(false)
+                .build();
+    }
+
+    /**
+     * Creates an authentication response that requires MFA verification.
+     *
+     * @param mfaToken temporary token for MFA verification
+     * @param user user requiring MFA
+     * @param expiresIn token expiration time in milliseconds
+     * @return authentication response with MFA required
+     */
+    public static AuthResponse mfaRequired(String mfaToken, UserDTO user, long expiresIn) {
+        return AuthResponse.builder()
+                .mfaToken(mfaToken)
+                .tokenType("Bearer")
+                .expiresIn(expiresIn)
+                .user(user)
+                .mfaRequired(true)
                 .build();
     }
 }

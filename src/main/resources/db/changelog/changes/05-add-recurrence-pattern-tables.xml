@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="05" author="w2p" runAlways="false">
+        <!-- Create recurrence_patterns table -->
+        <createTable tableName="recurrence_patterns">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="frequency" type="varchar(20)" remarks="DAILY, WEEKLY, MONTHLY, YEARLY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interval" type="int" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_of_week_position" type="int" remarks="Position of day of week in month (e.g., 2nd Tuesday)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="until_date" type="date">
+                <constraints nullable="true"/>
+            </column>
+            <column name="count" type="int" remarks="Number of occurrences">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add recurrence_pattern_id column to calendar_events table -->
+        <addColumn tableName="calendar_events">
+            <column name="recurrence_pattern_id" type="bigint">
+                <constraints nullable="true" foreignKeyName="fk_calendar_events_recurrence_pattern" references="recurrence_patterns(id)"/>
+            </column>
+        </addColumn>
+
+        <!-- Create recurrence_days_of_week table -->
+        <createTable tableName="recurrence_days_of_week">
+            <column name="recurrence_pattern_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_recurrence_days_of_week_pattern" references="recurrence_patterns(id)"/>
+            </column>
+            <column name="day_of_week" type="varchar(20)" remarks="MONDAY, TUESDAY, etc.">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Create recurrence_days_of_month table -->
+        <createTable tableName="recurrence_days_of_month">
+            <column name="recurrence_pattern_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_recurrence_days_of_month_pattern" references="recurrence_patterns(id)"/>
+            </column>
+            <column name="day_of_month" type="int" remarks="1-31">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Create recurrence_months table -->
+        <createTable tableName="recurrence_months">
+            <column name="recurrence_pattern_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_recurrence_months_pattern" references="recurrence_patterns(id)"/>
+            </column>
+            <column name="month" type="int" remarks="1-12">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Create recurrence_exceptions table -->
+        <createTable tableName="recurrence_exceptions">
+            <column name="recurrence_pattern_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_recurrence_exceptions_pattern" references="recurrence_patterns(id)"/>
+            </column>
+            <column name="exception_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add indexes for better performance -->
+        <createIndex indexName="idx_recurrence_days_of_week_pattern_id"
+                     tableName="recurrence_days_of_week">
+            <column name="recurrence_pattern_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_recurrence_days_of_month_pattern_id"
+                     tableName="recurrence_days_of_month">
+            <column name="recurrence_pattern_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_recurrence_months_pattern_id"
+                     tableName="recurrence_months">
+            <column name="recurrence_pattern_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_recurrence_exceptions_pattern_id"
+                     tableName="recurrence_exceptions">
+            <column name="recurrence_pattern_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_calendar_events_recurrence_pattern_id"
+                     tableName="calendar_events">
+            <column name="recurrence_pattern_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

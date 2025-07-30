@@ -33,11 +33,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        
+
+        // Convert user roles to Spring Security authorities
+        var authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .toList();
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password("") // No password for OAuth2 users
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+                .authorities(authorities)
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)

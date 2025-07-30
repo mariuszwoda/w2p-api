@@ -2,6 +2,12 @@ package pl.where2play.w2papi.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.where2play.w2papi.controller.CalendarEventController;
@@ -215,6 +221,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "event", key = "#eventId + '-' + #user.id")
     public CalendarEventDTO getEvent(Long eventId, User user) {
         log.info("Getting calendar event with ID: {} for user: {}", eventId, user.getEmail());
 
@@ -233,6 +240,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userEvents", key = "#user.id")
     public List<CalendarEventDTO> getAllEventsForUser(User user) {
         log.info("Getting all calendar events for user: {}", user.getEmail());
 
@@ -245,6 +253,33 @@ public class CalendarEventServiceImpl implements CalendarEventService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "userEvents", key = "#user.id + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<CalendarEventDTO> getAllEventsForUser(User user, Pageable pageable) {
+        log.info("Getting paginated calendar events for user: {} (page: {}, size: {})",
+                user.getEmail(), pageable.getPageNumber(), pageable.getPageSize());
+
+        // Get all events for the user
+        List<CalendarEvent> allEvents = eventRepository.findAllEventsForUser(user);
+
+        // Apply pagination manually
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allEvents.size());
+
+        // Create a sublist for the current page
+        List<CalendarEvent> pageEvents = allEvents.subList(start, end);
+
+        // Convert to DTOs
+        List<CalendarEventDTO> eventDTOs = pageEvents.stream()
+                .map(CalendarEventDTO::fromEntity)
+                .toList();
+
+        // Create and return a Page object
+        return new PageImpl<>(eventDTOs, pageable, allEvents.size());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "eventsInDateRange", key = "#user.id + '-' + #start + '-' + #end")
     public List<CalendarEventDTO> getEventsInDateRange(User user, LocalDateTime start, LocalDateTime end) {
         log.info("Getting calendar events for user: {} in date range: {} to {}", user.getEmail(), start, end);
 
@@ -256,7 +291,34 @@ public class CalendarEventServiceImpl implements CalendarEventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "eventsInDateRange", key = "#user.id + '-' + #start + '-' + #end + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<CalendarEventDTO> getEventsInDateRange(User user, LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        log.info("Getting paginated calendar events for user: {} in date range: {} to {} (page: {}, size: {})",
+                user.getEmail(), start, end, pageable.getPageNumber(), pageable.getPageSize());
+
+        // Get all events for the user in the date range
+        List<CalendarEvent> allEvents = eventRepository.findAllEventsForUserInDateRange(user, start, end);
+
+        // Apply pagination manually
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = Math.min((startIndex + pageable.getPageSize()), allEvents.size());
+
+        // Create a sublist for the current page
+        List<CalendarEvent> pageEvents = allEvents.subList(startIndex, endIndex);
+
+        // Convert to DTOs
+        List<CalendarEventDTO> eventDTOs = pageEvents.stream()
+                .map(CalendarEventDTO::fromEntity)
+                .toList();
+
+        // Create and return a Page object
+        return new PageImpl<>(eventDTOs, pageable, allEvents.size());
+    }
+
+    @Override
     @Transactional
+    @CacheEvict(value = {"userEvents", "eventsInDateRange"}, allEntries = true)
     public List<CalendarEventDTO> synchronizeEvents(User user, CalendarEvent.CalendarProvider provider) {
         log.info("Synchronizing calendar events for user: {} with provider: {}", user.getEmail(), provider);
 
@@ -271,6 +333,38 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         return events.stream()
                 .map(CalendarEventDTO::fromEntity)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = {"userEvents", "eventsInDateRange"}, allEntries = true)
+    public Page<CalendarEventDTO> synchronizeEvents(User user, CalendarEvent.CalendarProvider provider, Pageable pageable) {
+        log.info("Synchronizing paginated calendar events for user: {} with provider: {} (page: {}, size: {})",
+                user.getEmail(), provider, pageable.getPageNumber(), pageable.getPageSize());
+
+        // Synchronize events
+        List<CalendarEvent> allEvents;
+
+        if (provider == CalendarEvent.CalendarProvider.GOOGLE) {
+            allEvents = googleCalendarService.synchronizeEvents(user);
+        } else {
+            throw new UnsupportedOperationException("Calendar provider not supported: " + provider);
+        }
+
+        // Apply pagination manually
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allEvents.size());
+
+        // Create a sublist for the current page
+        List<CalendarEvent> pageEvents = allEvents.subList(start, end);
+
+        // Convert to DTOs
+        List<CalendarEventDTO> eventDTOs = pageEvents.stream()
+                .map(CalendarEventDTO::fromEntity)
+                .toList();
+
+        // Create and return a Page object
+        return new PageImpl<>(eventDTOs, pageable, allEvents.size());
     }
 
     @Override

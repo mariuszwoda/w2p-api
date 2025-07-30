@@ -16,6 +16,7 @@ public final class ApiEndpoint {
     public static final class Auth {
         public static final String BASE = "/api/auth";
         public static final String LOGIN = "/login";
+        public static final String VERIFY_MFA = "/verify-mfa";
     }
 
     /**
@@ -55,5 +56,22 @@ public final class ApiEndpoint {
         public static final String DELETE_ACCOUNT = "/me";
         public static final String SEARCH_USERS = "/search";
         public static final String GET_USER = "/{id}";
+    }
+
+    /**
+     * Calendar share controller endpoints.
+     */
+    public static final class CalendarShare {
+        public static final String BASE = "/api/shares";
+        public static final String SHARE_WITH_USER = "/user";
+        public static final String SHARE_WITH_EMAIL = "/email";
+        public static final String GET_SHARES_FOR_EVENT = "/event/{eventId}";
+        public static final String GET_SHARED_EVENTS = "/events";
+        public static final String GET_SHARED_EVENTS_BY_EMAIL = "/events/email";
+        public static final String UPDATE_PERMISSION = "/{shareId}/permission";
+        public static final String UPDATE_EXPIRATION = "/{shareId}/expiration";
+        public static final String DELETE_SHARE = "/{shareId}";
+        public static final String GET_BY_TOKEN = "/token/{token}";
+        public static final String REGENERATE_TOKEN = "/{shareId}/token";
     }
 }

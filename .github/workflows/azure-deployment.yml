@@ -1,0 +1,115 @@
+name: Azure Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Run Tests
+      run: mvn test
+
+    - name: Deploy to Azure Web App
+      if: github.event_name != 'pull_request'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'w2p-api'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: '${{ github.workspace }}/target/*.jar'
+
+  database-migration:
+    needs: build-and-deploy
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Run Liquibase Update
+      run: mvn liquibase:update -Dliquibase.url=${{ secrets.DB_URL }} -Dliquibase.username=${{ secrets.DB_USERNAME }} -Dliquibase.password=${{ secrets.DB_PASSWORD }}
+
+  monitoring-setup:
+    needs: database-migration
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up Azure Monitor Alerts
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          # Create alert for high CPU usage
+          az monitor alert create --name "High CPU Usage" \
+            --resource-group "w2p-api-rg" \
+            --target "w2p-api" \
+            --condition "Metric CPU percentage > 80" \
+            --description "Alert when CPU usage exceeds 80%" \
+            --action-group "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/w2p-api-rg/providers/Microsoft.Insights/actionGroups/DevOpsTeam"
+          
+          # Create alert for high memory usage
+          az monitor alert create --name "High Memory Usage" \
+            --resource-group "w2p-api-rg" \
+            --target "w2p-api" \
+            --condition "Metric Memory percentage > 80" \
+            --description "Alert when memory usage exceeds 80%" \
+            --action-group "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/w2p-api-rg/providers/Microsoft.Insights/actionGroups/DevOpsTeam"
+          
+          # Create alert for high response time
+          az monitor alert create --name "High Response Time" \
+            --resource-group "w2p-api-rg" \
+            --target "w2p-api" \
+            --condition "Metric Response time > 2000" \
+            --description "Alert when response time exceeds 2 seconds" \
+            --action-group "/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/w2p-api-rg/providers/Microsoft.Insights/actionGroups/DevOpsTeam"
+
+  backup-setup:
+    needs: monitoring-setup
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up Azure Database Backup
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          # Configure automated backups for the database
+          az postgres server update \
+            --resource-group "w2p-api-rg" \
+            --name "w2p-api-db" \
+            --backup-retention 7

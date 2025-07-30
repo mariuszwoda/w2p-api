@@ -6,7 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -66,6 +68,21 @@ public class CalendarEvent {
     @Column(name = "is_all_day")
     private boolean allDay;
 
+    /**
+     * The recurrence pattern for this event.
+     * If null, the event does not recur.
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "recurrence_pattern_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private RecurrencePattern recurrencePattern;
+
+    /**
+     * Legacy recurrence rule string.
+     * This field is kept for backward compatibility.
+     * New code should use the recurrencePattern field.
+     */
     @Column(name = "recurrence_rule")
     private String recurrenceRule;
 
@@ -83,6 +100,12 @@ public class CalendarEvent {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<CalendarShare> shares = new ArrayList<>();
 
     /**
      * Enum representing the calendar providers supported by the system.

@@ -44,6 +44,8 @@ class SampleTransactionServiceFixedTest {
 
         // Set up the self reference
         sampleTransactionService.setSelf(self);
+
+
     }
 
     @Test

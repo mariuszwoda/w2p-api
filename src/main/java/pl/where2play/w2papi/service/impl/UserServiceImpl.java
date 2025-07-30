@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.where2play.w2papi.dto.UserDTO;
 import pl.where2play.w2papi.dto.request.AuthRequest;
+import pl.where2play.w2papi.dto.request.MfaVerificationRequest;
 import pl.where2play.w2papi.dto.response.AuthResponse;
 import pl.where2play.w2papi.model.User;
 import pl.where2play.w2papi.repository.UserRepository;
 import pl.where2play.w2papi.security.JwtTokenProvider;
+import pl.where2play.w2papi.service.MfaService;
 import pl.where2play.w2papi.service.UserService;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MfaService mfaService;
 
     @Override
     @Transactional
@@ -64,6 +67,16 @@ public class UserServiceImpl implements UserService {
                             .build();
                     return userRepository.save(newUser);
                 });
+
+        // Check if MFA is enabled for the user
+        if (user.isMfaEnabled()) {
+            log.info("MFA is enabled for user: {}, returning MFA token", user.getEmail());
+            // Generate a temporary MFA token
+            String mfaToken = jwtTokenProvider.generateMfaToken(user.getEmail());
+            long mfaExpirationInMs = 300000; // 5 minutes
+
+            return AuthResponse.mfaRequired(mfaToken, UserDTO.fromEntity(user), mfaExpirationInMs);
+        }
 
         // Generate JWT token
         String token = jwtTokenProvider.generateToken(user.getEmail());
@@ -124,5 +137,33 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Optional<User> findByProviderAndProviderId(User.AuthProvider provider, String providerId) {
         return userRepository.findByProviderAndProviderId(provider, providerId);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse verifyMfa(MfaVerificationRequest mfaRequest) {
+        log.info("Verifying MFA code for user: {}", mfaRequest.getEmail());
+
+        // Validate the MFA token
+        if (!jwtTokenProvider.validateMfaToken(mfaRequest.getToken())) {
+            log.warn("Invalid MFA token for user: {}", mfaRequest.getEmail());
+            throw new BadCredentialsException("Invalid or expired MFA token");
+        }
+
+        // Find the user by email
+        User user = userRepository.findByEmail(mfaRequest.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + mfaRequest.getEmail()));
+
+        // Verify the MFA code
+        if (!mfaService.verifyCode(user, mfaRequest.getCode())) {
+            log.warn("Invalid MFA code for user: {}", mfaRequest.getEmail());
+            throw new BadCredentialsException("Invalid MFA code");
+        }
+
+        // Generate JWT token
+        String token = jwtTokenProvider.generateToken(user.getEmail());
+        long expirationInMs = 86400000; // 24 hours
+
+        return AuthResponse.success(token, UserDTO.fromEntity(user), expirationInMs);
     }
 }

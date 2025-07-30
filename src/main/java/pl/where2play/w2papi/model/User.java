@@ -70,6 +70,20 @@ public class User {
     public enum AuthProvider {
         LOCAL,
         GOOGLE,
-        FACEBOOK
+        FACEBOOK,
+        TWITTER,
+        GITHUB,
+        MICROSOFT,
+        APPLE
     }
+
+    /**
+     * Flag indicating whether MFA is enabled for this user.
+     */
+    private boolean mfaEnabled;
+
+    /**
+     * Secret key for MFA (used for TOTP generation).
+     */
+    private String mfaSecret;
 }

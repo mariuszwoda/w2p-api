@@ -46,7 +46,32 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        // Protected endpoints
+
+                        // Admin-only endpoints
+                        .requestMatchers("/api/users/search").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/users/{id}").hasAuthority("ROLE_ADMIN")
+
+                        // E2E test endpoints
+                        .requestMatchers("/api/calendar/events/{id}/hard").hasAuthority("ROLE_E2E_TEST")
+                        .requestMatchers(request -> 
+                            request.getRequestURI().matches("/api/calendar/events/\\d+") && 
+                            request.getMethod().equals("DELETE") && 
+                            request.getParameter("isE2ETest") != null && 
+                            request.getParameter("isE2ETest").equals("true")
+                        ).hasAuthority("ROLE_E2E_TEST")
+
+                        // User endpoints
+                        .requestMatchers("/api/users/me").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/users/profile").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/users/account").hasAuthority("ROLE_USER")
+
+                        // Calendar event endpoints
+                        .requestMatchers("/api/calendar/events/**").hasAuthority("ROLE_USER")
+
+                        // Google Calendar endpoints
+                        .requestMatchers("/api/google-calendar/**").hasAuthority("ROLE_USER")
+
+                        // Any other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)

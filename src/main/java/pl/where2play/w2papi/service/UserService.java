@@ -2,6 +2,7 @@ package pl.where2play.w2papi.service;
 
 import pl.where2play.w2papi.dto.UserDTO;
 import pl.where2play.w2papi.dto.request.AuthRequest;
+import pl.where2play.w2papi.dto.request.MfaVerificationRequest;
 import pl.where2play.w2papi.dto.response.AuthResponse;
 import pl.where2play.w2papi.model.User;
 
@@ -78,4 +79,12 @@ public interface UserService {
      * @return the user, if found
      */
     Optional<User> findByProviderAndProviderId(User.AuthProvider provider, String providerId);
+
+    /**
+     * Verify MFA code and complete authentication.
+     *
+     * @param mfaRequest the MFA verification request
+     * @return the authentication response
+     */
+    AuthResponse verifyMfa(MfaVerificationRequest mfaRequest);
 }
